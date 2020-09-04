@@ -5,7 +5,7 @@ This is the User service
 Generated with
 
 ```
-micro new --namespace=boardgame.user --type=service user
+micro new --namespace=boardgame --type=service user
 ```
 
 ## Getting Started
@@ -16,7 +16,7 @@ micro new --namespace=boardgame.user --type=service user
 
 ## Configuration
 
-- FQDN: boardgame.user.service.user
+- FQDN: boardgame.service.user
 - Type: service
 - Alias: user
 
