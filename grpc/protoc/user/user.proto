@@ -1,0 +1,23 @@
+syntax = "proto3";
+
+option go_package = "user";
+
+package user;
+
+service User {
+    rpc GetUserById(UserRequest) returns (UserResponse) {}
+    rpc GetUserByCredential(CredentialRequest) returns (UserResponse) {}
+}
+
+message UserRequest {
+    int64 ID = 1;
+}
+
+message CredentialRequest {
+    string Username = 1;
+    string Password = 2;
+}
+
+message UserResponse {
+    int64 ID = 1;
+}

@@ -1,0 +1,12 @@
+[
+    {
+        "locale": "en",
+        "key": "validation-error",
+        "trans": "validation error"
+    },
+    {
+        "locale": "en",
+        "key": "internal-error",
+        "trans": "internal server error"
+    }
+]

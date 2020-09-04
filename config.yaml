@@ -1,0 +1,6 @@
+ServiceSettings:
+    AllowedOrigins:
+        - "*"
+SqlSettings:
+    DriverName: "sqlite3"
+    DataSource: "db.sqlite"

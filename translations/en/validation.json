@@ -1,0 +1,12 @@
+[
+    {
+        "locale": "en",
+        "key": "validation-invalid",
+        "trans": "{0} is invalid"
+    },
+    {
+        "locale": "en",
+        "key": "validation-not-exists",
+        "trans": "{0} is not exists"
+    }
+]
