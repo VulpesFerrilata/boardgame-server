@@ -1,20 +1,11 @@
 syntax = "proto3";
 
-option go_package = "auth";
+option go_package = "protoc/auth";
 
 package auth;
 
 service Auth {
     rpc Authenticate(TokenRequest) returns (ClaimResponse) {}
-}
-
-message UserRequest {
-    int64 ID = 1;
-}
-
-message TokenResponse {
-    string AccessToken = 1;
-    string RefreshToken = 2;
 }
 
 message TokenRequest {

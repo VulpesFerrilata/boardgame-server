@@ -1,6 +1,15 @@
 package container
 
 import (
+	"github.com/VulpesFerrilata/boardgame-server/auth/infrastructure/go-micro/handler"
+	"github.com/VulpesFerrilata/boardgame-server/auth/infrastructure/iris/controller"
+	"github.com/VulpesFerrilata/boardgame-server/auth/infrastructure/iris/router"
+	"github.com/VulpesFerrilata/boardgame-server/auth/infrastructure/iris/server"
+	"github.com/VulpesFerrilata/boardgame-server/auth/internal/domain/repository"
+	"github.com/VulpesFerrilata/boardgame-server/auth/internal/domain/service"
+	"github.com/VulpesFerrilata/boardgame-server/auth/internal/usecase/adapter"
+	"github.com/VulpesFerrilata/boardgame-server/auth/internal/usecase/interactor"
+	gateway "github.com/VulpesFerrilata/boardgame-server/grpc/service"
 	"github.com/VulpesFerrilata/boardgame-server/library/config"
 	"github.com/VulpesFerrilata/boardgame-server/library/pkg/database"
 	"github.com/VulpesFerrilata/boardgame-server/library/pkg/db"
@@ -8,14 +17,7 @@ import (
 	translator_middleware "github.com/VulpesFerrilata/boardgame-server/library/pkg/middleware/translator"
 	"github.com/VulpesFerrilata/boardgame-server/library/pkg/translator"
 	"github.com/VulpesFerrilata/boardgame-server/library/pkg/validator"
-	"github.com/VulpesFerrilata/boardgame-server/user/infrastructure/go-micro/handler"
-	"github.com/VulpesFerrilata/boardgame-server/user/infrastructure/iris/controller"
-	"github.com/VulpesFerrilata/boardgame-server/user/infrastructure/iris/router"
-	"github.com/VulpesFerrilata/boardgame-server/user/infrastructure/iris/server"
-	"github.com/VulpesFerrilata/boardgame-server/user/internal/domain/repository"
-	"github.com/VulpesFerrilata/boardgame-server/user/internal/domain/service"
-	"github.com/VulpesFerrilata/boardgame-server/user/internal/usecase/adapter"
-	"github.com/VulpesFerrilata/boardgame-server/user/internal/usecase/interactor"
+
 	"go.uber.org/dig"
 )
 
@@ -27,11 +29,13 @@ func NewContainer() *dig.Container {
 	container.Provide(config.NewJwtConfig)
 
 	//--Domain
-	container.Provide(repository.NewUserRepository)
-	container.Provide(service.NewUserService)
+	container.Provide(repository.NewAuthRepository)
+	container.Provide(service.NewAuthService)
 	//--Usecase
-	container.Provide(adapter.NewUserAdapter)
-	container.Provide(interactor.NewUserInteractor)
+	container.Provide(adapter.NewAuthAdapter)
+	container.Provide(interactor.NewAuthInteractor)
+	//--Gateways
+	container.Provide(gateway.NewUserService)
 
 	//--Utility
 	container.Provide(database.NewGorm)
@@ -44,14 +48,14 @@ func NewContainer() *dig.Container {
 	container.Provide(translator_middleware.NewTranslatorMiddleware)
 
 	//--Controller
-	container.Provide(controller.NewUserController)
+	container.Provide(controller.NewAuthController)
 	//--Router
 	container.Provide(router.NewRouter)
 	//--Server
 	container.Provide(server.NewServer)
 
 	//--Grpc
-	container.Provide(handler.NewUserHandler)
+	container.Provide(handler.NewAuthHandler)
 
 	return container
 }

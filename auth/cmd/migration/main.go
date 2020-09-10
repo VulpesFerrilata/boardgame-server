@@ -3,9 +3,9 @@ package main
 import (
 	"log"
 
+	"github.com/VulpesFerrilata/boardgame-server/auth/internal/domain/model"
 	"github.com/VulpesFerrilata/boardgame-server/library/config"
 	"github.com/VulpesFerrilata/boardgame-server/library/pkg/database"
-	"github.com/VulpesFerrilata/boardgame-server/user/internal/domain/model"
 )
 
 func main() {
@@ -20,10 +20,10 @@ func main() {
 	}
 
 	db.DropTableIfExists(
-		&model.User{},
+		&model.Token{},
 	)
 
 	db.CreateTable(
-		&model.User{},
+		&model.Token{},
 	)
 }

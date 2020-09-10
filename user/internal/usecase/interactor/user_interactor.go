@@ -33,6 +33,13 @@ func (ui userInteractor) GetUserById(ctx context.Context, userForm *form.UserFor
 	if err != nil {
 		return nil, err
 	}
+
+	user, err = ui.userService.UserRepo.GetById(ctx, user.ID)
+	if err != nil {
+		return nil, err
+	}
+
+	return ui.userAdapter.ResponseUser(ctx, user)
 }
 
 func (ui userInteractor) GetUserByCredential(ctx context.Context, loginForm *form.LoginForm) (*dto.UserDTO, error) {
@@ -42,6 +49,11 @@ func (ui userInteractor) GetUserByCredential(ctx context.Context, loginForm *for
 	}
 
 	if err := ui.userService.ValidateLogin(ctx, user); err != nil {
+		return nil, err
+	}
+
+	user, err = ui.userService.UserRepo.GetByUsername(ctx, user.Username)
+	if err != nil {
 		return nil, err
 	}
 

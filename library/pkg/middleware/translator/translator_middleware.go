@@ -22,10 +22,9 @@ type TranslatorMiddleware struct {
 
 func (tm TranslatorMiddleware) Serve(ctx iris.Context) {
 	r := ctx.Request()
-	trans, _ := tm.utrans.FindTranslator(pure.AcceptedLanguages(r)...)
 
 	requestCtx := r.Context()
-	requestCtx = context.WithValue(requestCtx, translatorKey{}, trans)
+	requestCtx = context.WithValue(requestCtx, translatorKey{}, pure.AcceptedLanguages(r))
 	r.WithContext(requestCtx)
 
 	ctx.ResetRequest(r)
@@ -33,9 +32,10 @@ func (tm TranslatorMiddleware) Serve(ctx iris.Context) {
 }
 
 func (tm TranslatorMiddleware) Get(ctx context.Context) ut.Translator {
-	trans, found := ctx.Value(translatorKey{}).(ut.Translator)
+	acceptedLanguages, found := ctx.Value(translatorKey{}).([]string)
 	if !found {
 		return tm.utrans.GetFallback()
 	}
+	trans, _ := tm.utrans.FindTranslator(acceptedLanguages...)
 	return trans
 }

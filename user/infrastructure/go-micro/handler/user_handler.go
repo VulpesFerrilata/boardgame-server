@@ -4,7 +4,7 @@ import (
 	"context"
 
 	"github.com/VulpesFerrilata/boardgame-server/grpc/protoc/user"
-	"github.com/VulpesFerrilata/boardgame-server/user/infrastructure/go-micro/converter"
+	"github.com/VulpesFerrilata/boardgame-server/user/infrastructure/go-micro/viewmodel"
 	"github.com/VulpesFerrilata/boardgame-server/user/internal/usecase/interactor"
 )
 
@@ -19,21 +19,25 @@ type userHandler struct {
 }
 
 func (uh userHandler) GetUserById(ctx context.Context, userRequestPb *user.UserRequest, userResponsePb *user.UserResponse) error {
-	userForm := converter.ConvertUserRequestPbToUserForm(userRequestPb)
-	userDTO, err := uh.userInteractor.GetUserById(ctx, userForm)
+	userRequestVM := viewmodel.UserRequest{
+		UserRequest: userRequestPb,
+	}
+	userDTO, err := uh.userInteractor.GetUserById(ctx, userRequestVM.ToUserForm())
 	if err != nil {
 		return err
 	}
-	userResponsePb = converter.ConvertUserDtoToUserResponsePb(userDTO)
+	userResponsePb = viewmodel.NewUserResponse(userDTO).UserResponse
 	return nil
 }
 
 func (uh userHandler) GetUserByCredential(ctx context.Context, credentialRequestPb *user.CredentialRequest, userResponsePb *user.UserResponse) error {
-	loginForm := converter.ConvertCredentialRequestPbToLoginForm(credentialRequestPb)
-	userDTO, err := uh.userInteractor.GetUserByCredential(ctx, loginForm)
+	credentialRequestVM := viewmodel.CredentialRequest{
+		CredentialRequest: credentialRequestPb,
+	}
+	userDTO, err := uh.userInteractor.GetUserByCredential(ctx, credentialRequestVM.ToLoginForm())
 	if err != nil {
 		return err
 	}
-	userResponsePb = converter.ConvertUserDtoToUserResponsePb(userDTO)
+	userResponsePb = viewmodel.NewUserResponse(userDTO).UserResponse
 	return nil
 }

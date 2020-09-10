@@ -5,7 +5,7 @@ This is the Auth service
 Generated with
 
 ```
-micro new --namespace=boardgame.auth --type=service auth
+micro new --namespace=boardgame --type=service auth
 ```
 
 ## Getting Started
@@ -16,7 +16,7 @@ micro new --namespace=boardgame.auth --type=service auth
 
 ## Configuration
 
-- FQDN: boardgame.auth.service.auth
+- FQDN: boardgame.service.auth
 - Type: service
 - Alias: auth
 
