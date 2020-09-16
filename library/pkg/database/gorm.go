@@ -4,13 +4,19 @@ import (
 	"strings"
 
 	"github.com/VulpesFerrilata/boardgame-server/library/config"
-	"github.com/jinzhu/gorm"
-
-	_ "github.com/jinzhu/gorm/dialects/mysql"
-	_ "github.com/jinzhu/gorm/dialects/postgres"
-	_ "github.com/jinzhu/gorm/dialects/sqlite"
+	"gorm.io/driver/mysql"
+	"gorm.io/driver/sqlite"
+	"gorm.io/gorm"
 )
 
 func NewGorm(config *config.Config) (*gorm.DB, error) {
-	return gorm.Open(strings.ToLower(config.SqlSettings.DriverName), config.SqlSettings.DataSource)
+	driverName := strings.ToLower(config.SqlSettings.DriverName)
+	var dialector gorm.Dialector
+	switch driverName {
+	case "mysql":
+		dialector = mysql.Open(config.SqlSettings.DataSource)
+	case "sqlite":
+		dialector = sqlite.Open(config.SqlSettings.DataSource)
+	}
+	return gorm.Open(dialector, &gorm.Config{})
 }

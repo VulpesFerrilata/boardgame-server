@@ -4,9 +4,9 @@ import (
 	"context"
 	"database/sql"
 
-	"github.com/jinzhu/gorm"
 	"github.com/kataras/iris/v12"
 	"github.com/micro/go-micro/v2/server"
+	"gorm.io/gorm"
 )
 
 type transactionKey struct{}
@@ -25,7 +25,7 @@ func (tm TransactionMiddleware) ServeWithTxOptions(opts *sql.TxOptions) iris.Han
 	return func(ctx iris.Context) {
 		r := ctx.Request()
 		requestCtx := r.Context()
-		tx := tm.db.BeginTx(requestCtx, opts)
+		tx := tm.db.WithContext(requestCtx).Begin(opts)
 
 		defer func() {
 			if r := recover(); r != nil {
@@ -45,7 +45,7 @@ func (tm TransactionMiddleware) ServeWithTxOptions(opts *sql.TxOptions) iris.Han
 func (tm TransactionMiddleware) HandlerWrapperWithTxOptions(opts *sql.TxOptions) server.HandlerWrapper {
 	return func(f server.HandlerFunc) server.HandlerFunc {
 		return func(ctx context.Context, req server.Request, rsp interface{}) error {
-			tx := tm.db.BeginTx(ctx, opts)
+			tx := tm.db.WithContext(ctx).Begin(opts)
 
 			defer func() {
 				if r := recover(); r != nil {

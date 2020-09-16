@@ -4,8 +4,7 @@ import (
 	"context"
 
 	"github.com/VulpesFerrilata/boardgame-server/library/pkg/middleware"
-
-	"github.com/jinzhu/gorm"
+	"gorm.io/gorm"
 )
 
 func NewDbContext(db *gorm.DB, transactionMiddleware *middleware.TransactionMiddleware) *DbContext {
