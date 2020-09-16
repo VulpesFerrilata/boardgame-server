@@ -7,8 +7,8 @@ go 1.13
 replace google.golang.org/grpc => google.golang.org/grpc v1.26.0
 
 require (
-	github.com/VulpesFerrilata/boardgame-server/grpc v0.0.0-20200904114156-527e52dd7649
-	github.com/VulpesFerrilata/boardgame-server/library v0.0.0-20200904114156-527e52dd7649
+	github.com/VulpesFerrilata/boardgame-server/grpc v0.0.0-20200916095637-c7b750ace889
+	github.com/VulpesFerrilata/boardgame-server/library v0.0.0-20200916095637-c7b750ace889
 	github.com/andybalholm/brotli v1.0.1-0.20200619015827-c3da72aa01ed // indirect
 	github.com/dgrijalva/jwt-go v3.2.0+incompatible
 	github.com/google/uuid v1.1.2-0.20200519141726-cb32006e483f // indirect
@@ -22,7 +22,6 @@ require (
 	github.com/kataras/neffos v0.0.16 // indirect
 	github.com/klauspost/compress v1.10.10 // indirect
 	github.com/mediocregopher/radix/v3 v3.5.2 // indirect
-	github.com/micro/go-micro v1.18.0
 	github.com/micro/go-micro/v2 v2.9.1
 	github.com/microcosm-cc/bluemonday v1.0.3 // indirect
 	github.com/stretchr/testify v1.6.1 // indirect

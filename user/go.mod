@@ -3,8 +3,8 @@ module github.com/VulpesFerrilata/boardgame-server/user
 go 1.14
 
 require (
-	github.com/VulpesFerrilata/boardgame-server/grpc v0.0.0-20200904093324-59494f30b3e5
-	github.com/VulpesFerrilata/boardgame-server/library v0.0.0-20200904114156-527e52dd7649
+	github.com/VulpesFerrilata/boardgame-server/grpc v0.0.0-20200916095637-c7b750ace889
+	github.com/VulpesFerrilata/boardgame-server/library v0.0.0-20200916095637-c7b750ace889
 	github.com/jinzhu/gorm v1.9.16
 	github.com/kataras/iris/v12 v12.1.8
 	github.com/micro/go-micro/v2 v2.9.1

@@ -4,8 +4,7 @@ import (
 	"github.com/VulpesFerrilata/boardgame-server/library/config"
 	"github.com/VulpesFerrilata/boardgame-server/library/pkg/database"
 	"github.com/VulpesFerrilata/boardgame-server/library/pkg/db"
-	transaction_middleware "github.com/VulpesFerrilata/boardgame-server/library/pkg/middleware/transaction"
-	translator_middleware "github.com/VulpesFerrilata/boardgame-server/library/pkg/middleware/translator"
+	"github.com/VulpesFerrilata/boardgame-server/library/pkg/middleware"
 	"github.com/VulpesFerrilata/boardgame-server/library/pkg/translator"
 	"github.com/VulpesFerrilata/boardgame-server/library/pkg/validator"
 	"github.com/VulpesFerrilata/boardgame-server/user/infrastructure/go-micro/handler"
@@ -40,8 +39,8 @@ func NewContainer() *dig.Container {
 	container.Provide(validator.NewValidate)
 
 	//--Middleware
-	container.Provide(transaction_middleware.NewTransactionMiddleware)
-	container.Provide(translator_middleware.NewTranslatorMiddleware)
+	container.Provide(middleware.NewTransactionMiddleware)
+	container.Provide(middleware.NewTranslatorMiddleware)
 
 	//--Controller
 	container.Provide(controller.NewUserController)

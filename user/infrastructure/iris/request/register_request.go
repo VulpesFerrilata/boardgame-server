@@ -10,6 +10,7 @@ type RegisterRequest struct {
 
 func (rr RegisterRequest) ToInteractorRegisterForm() *form.RegisterForm {
 	registerForm := new(form.RegisterForm)
+	registerForm.LoginForm = new(form.LoginForm)
 	registerForm.Username = rr.Username
 	registerForm.Password = rr.Password
 	registerForm.RepeatPassword = rr.RepeatPassword

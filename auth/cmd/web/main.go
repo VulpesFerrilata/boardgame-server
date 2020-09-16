@@ -5,7 +5,7 @@ import (
 
 	"github.com/VulpesFerrilata/boardgame-server/auth/infrastructure/container"
 	"github.com/kataras/iris/v12"
-	"github.com/micro/go-micro/web"
+	"github.com/micro/go-micro/v2/web"
 )
 
 func main() {
