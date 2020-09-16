@@ -2,7 +2,7 @@ package error_handler
 
 import (
 	"github.com/VulpesFerrilata/boardgame-server/library/pkg/errors"
-	"github.com/VulpesFerrilata/boardgame-server/library/pkg/middleware/translator"
+	"github.com/VulpesFerrilata/boardgame-server/library/pkg/middleware"
 	"github.com/kataras/iris/v12"
 )
 
@@ -10,14 +10,14 @@ type ErrorHandler interface {
 	HandleError(ctx iris.Context, err error) iris.Problem
 }
 
-func NewDefaultErrorHandler(translatorMiddleware *translator.TranslatorMiddleware) ErrorHandler {
+func NewDefaultErrorHandler(translatorMiddleware *middleware.TranslatorMiddleware) ErrorHandler {
 	return &defaultErrorHandler{
 		translatorMiddleware: translatorMiddleware,
 	}
 }
 
 type defaultErrorHandler struct {
-	translatorMiddleware *translator.TranslatorMiddleware
+	translatorMiddleware *middleware.TranslatorMiddleware
 }
 
 func (deh defaultErrorHandler) HandleError(ctx iris.Context, err error) iris.Problem {

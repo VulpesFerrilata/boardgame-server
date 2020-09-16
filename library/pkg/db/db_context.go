@@ -3,12 +3,12 @@ package db
 import (
 	"context"
 
-	"github.com/VulpesFerrilata/boardgame-server/library/pkg/middleware/transaction"
+	"github.com/VulpesFerrilata/boardgame-server/library/pkg/middleware"
 
 	"github.com/jinzhu/gorm"
 )
 
-func NewDbContext(db *gorm.DB, transactionMiddleware *transaction.TransactionMiddleware) *DbContext {
+func NewDbContext(db *gorm.DB, transactionMiddleware *middleware.TransactionMiddleware) *DbContext {
 	return &DbContext{
 		db:                    db,
 		transactionMiddleware: transactionMiddleware,
@@ -17,7 +17,7 @@ func NewDbContext(db *gorm.DB, transactionMiddleware *transaction.TransactionMid
 
 type DbContext struct {
 	db                    *gorm.DB
-	transactionMiddleware *transaction.TransactionMiddleware
+	transactionMiddleware *middleware.TransactionMiddleware
 }
 
 func (dc *DbContext) GetDB(ctx context.Context) *gorm.DB {

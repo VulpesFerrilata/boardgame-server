@@ -7,8 +7,8 @@ import (
 	"strings"
 
 	"github.com/VulpesFerrilata/boardgame-server/library/pkg/errors"
-	"github.com/VulpesFerrilata/boardgame-server/library/pkg/middleware/translator"
 
+	"github.com/VulpesFerrilata/boardgame-server/library/pkg/middleware"
 	"github.com/go-playground/locales/en"
 	ut "github.com/go-playground/universal-translator"
 	"gopkg.in/go-playground/validator.v9"
@@ -22,7 +22,7 @@ type Validate interface {
 	Var(ctx context.Context, field interface{}, tag string) error
 }
 
-func NewValidate(utrans *ut.UniversalTranslator, translatorMiddleware *translator.TranslatorMiddleware) (Validate, error) {
+func NewValidate(utrans *ut.UniversalTranslator, translatorMiddleware *middleware.TranslatorMiddleware) (Validate, error) {
 	v := validator.New()
 	v.RegisterTagNameFunc(func(field reflect.StructField) string {
 		name := strings.SplitN(field.Tag.Get("name"), ",", 2)[0]
@@ -49,7 +49,7 @@ func NewValidate(utrans *ut.UniversalTranslator, translatorMiddleware *translato
 
 type validate struct {
 	*validator.Validate
-	translatorMiddleware *translator.TranslatorMiddleware
+	translatorMiddleware *middleware.TranslatorMiddleware
 }
 
 func (v validate) Struct(ctx context.Context, s interface{}) error {
