@@ -27,11 +27,13 @@ func (deh defaultErrorHandler) HandleError(ctx iris.Context, err error) iris.Pro
 	case *errors.ValidationError:
 		title, _ := trans.T("validation-error")
 		problem.Status(iris.StatusUnprocessableEntity)
+		problem.Type("about:blank")
 		problem.Title(title)
 		problem.Detail(err.Error())
 	default:
 		title, _ := trans.T("internal-error")
 		problem.Status(iris.StatusInternalServerError)
+		problem.Type("about:blank")
 		problem.Title(title)
 		problem.Detail(err.Error())
 	}
