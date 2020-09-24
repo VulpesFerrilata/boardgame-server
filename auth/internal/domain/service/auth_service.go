@@ -2,12 +2,13 @@ package service
 
 import (
 	"context"
+	"errors"
 
 	"github.com/VulpesFerrilata/boardgame-server/auth/internal/domain/model"
 	"github.com/VulpesFerrilata/boardgame-server/auth/internal/domain/repository"
-	"github.com/VulpesFerrilata/boardgame-server/library/pkg/errors"
+	server_errors "github.com/VulpesFerrilata/boardgame-server/library/pkg/errors"
 
-	"github.com/jinzhu/gorm"
+	"gorm.io/gorm"
 )
 
 func NewAuthService(authRepo repository.AuthRepository) *AuthService {
@@ -21,22 +22,26 @@ type AuthService struct {
 }
 
 func (as AuthService) Validate(ctx context.Context, token *model.Token) error {
-	validationErrs := new(errors.ValidationError)
-	tokenDB, err := as.AuthRepo.GetByJti(ctx, token.Jti)
-	if err != nil && !gorm.IsRecordNotFoundError(err) {
+	validationErrs := new(server_errors.ValidationError)
+	count, err := as.AuthRepo.CountByJti(ctx, token.Jti)
+	if err != nil {
 		return err
 	}
-	if tokenDB != nil {
+	if count > 0 {
 		validationErrs.Append("jti is already exists")
 	}
-	return validationErrs
+
+	if validationErrs.HasErrors() {
+		return validationErrs
+	}
+	return nil
 }
 
 func (as AuthService) ValidateAuthenticate(ctx context.Context, token *model.Token) error {
-	validationErrs := new(errors.ValidationError)
+	validationErrs := new(server_errors.ValidationError)
 	tokenDB, err := as.AuthRepo.GetById(ctx, token.ID)
 	if err != nil {
-		if gorm.IsRecordNotFoundError(err) {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
 			validationErrs.Append("id is invalid")
 			return validationErrs
 		}
@@ -45,5 +50,9 @@ func (as AuthService) ValidateAuthenticate(ctx context.Context, token *model.Tok
 	if token.Jti != tokenDB.Jti {
 		validationErrs.Append("jti is invalid")
 	}
-	return validationErrs
+
+	if validationErrs.HasErrors() {
+		return validationErrs
+	}
+	return nil
 }

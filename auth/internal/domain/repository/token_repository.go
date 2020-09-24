@@ -8,6 +8,7 @@ import (
 )
 
 type AuthRepository interface {
+	CountByJti(ctx context.Context, jti string) (int, error)
 	GetById(ctx context.Context, id uint) (*model.Token, error)
 	GetByJti(ctx context.Context, jti string) (*model.Token, error)
 	CreateOrUpdate(context.Context, *model.Token) error
@@ -21,6 +22,12 @@ func NewAuthRepository(dbContext *db.DbContext) AuthRepository {
 
 type authRepository struct {
 	dbContext *db.DbContext
+}
+
+func (ar authRepository) CountByJti(ctx context.Context, jti string) (int, error) {
+	count := 0
+	token := new(model.Token)
+	return count, ar.dbContext.GetDB(ctx).Find(token, "jti = ?", jti).Count(&count).Error
 }
 
 func (ar authRepository) GetById(ctx context.Context, id uint) (*model.Token, error) {

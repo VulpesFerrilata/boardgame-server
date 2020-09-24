@@ -7,9 +7,11 @@ import (
 	"github.com/VulpesFerrilata/boardgame-server/user/internal/domain/model"
 	"github.com/VulpesFerrilata/boardgame-server/user/internal/domain/repository"
 
-	"github.com/VulpesFerrilata/boardgame-server/library/pkg/errors"
+	server_errors "github.com/VulpesFerrilata/boardgame-server/library/pkg/errors"
 
-	"github.com/jinzhu/gorm"
+	"errors"
+
+	"gorm.io/gorm"
 )
 
 func NewUserService(userRepo repository.UserRepository) *UserService {
@@ -23,11 +25,11 @@ type UserService struct {
 }
 
 func (us UserService) ValidateLogin(ctx context.Context, user *model.User) error {
-	validationErrs := new(errors.ValidationError)
+	validationErrs := new(server_errors.ValidationError)
 
 	userDB, err := us.UserRepo.GetByUsername(ctx, user.Username)
 	if err != nil {
-		if gorm.IsRecordNotFoundError(err) {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
 			validationErrs.Append("username is invalid")
 			return validationErrs
 		}
@@ -36,11 +38,16 @@ func (us UserService) ValidateLogin(ctx context.Context, user *model.User) error
 	if !bytes.Equal(user.HashPassword, userDB.HashPassword) {
 		validationErrs.Append("password is invalid")
 	}
-	return validationErrs
+
+	if validationErrs.HasErrors() {
+		return validationErrs
+	}
+
+	return nil
 }
 
 func (us UserService) Validate(ctx context.Context, user *model.User) error {
-	validationErrs := new(errors.ValidationError)
+	validationErrs := new(server_errors.ValidationError)
 
 	count, err := us.UserRepo.CountByUsername(ctx, user.Username)
 	if err != nil {
@@ -49,5 +56,9 @@ func (us UserService) Validate(ctx context.Context, user *model.User) error {
 	if count > 0 {
 		validationErrs.Append("username is already exists")
 	}
-	return validationErrs
+
+	if validationErrs.HasErrors() {
+		return validationErrs
+	}
+	return nil
 }
