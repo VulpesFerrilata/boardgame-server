@@ -72,16 +72,16 @@ func (v validate) parseError(ctx context.Context, err error) error {
 	trans := v.translatorMiddleware.Get(ctx)
 
 	if err != nil {
-		validationErrs, ok := err.(validator.ValidationErrors)
+		fieldErrs, ok := err.(validator.ValidationErrors)
 		if !ok {
 			return err
 		}
 
-		errs := make([]string, 0)
-		for _, validationErr := range validationErrs {
-			errs = append(errs, validationErr.Translate(trans))
+		validationErr := errors.NewValidationError()
+		for _, fieldErr := range fieldErrs {
+			validationErr.WithFieldError(fieldErr.Field(), fieldErr.Translate(trans))
 		}
-		return errors.NewValidationError(errs...)
+		return validationErr
 	}
 
 	return nil
