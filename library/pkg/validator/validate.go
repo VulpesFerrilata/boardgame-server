@@ -79,7 +79,7 @@ func (v validate) parseError(ctx context.Context, err error) error {
 
 		validationErr := errors.NewValidationError()
 		for _, fieldErr := range fieldErrs {
-			validationErr.WithFieldError(fieldErr.Field(), fieldErr.Translate(trans))
+			validationErr.WithFieldError(fieldErr.Translate(trans))
 		}
 		return validationErr
 	}

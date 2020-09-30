@@ -13,7 +13,7 @@ import (
 
 type ValidationError interface {
 	Error
-	WithFieldError(field string, err string)
+	WithFieldError(fieldErr string)
 	HasErrors() bool
 }
 
@@ -22,39 +22,27 @@ func NewValidationError() ValidationError {
 }
 
 type validationError struct {
-	fieldErrs map[string][]string
+	fieldErrs []string
 }
 
 func (ve validationError) Error() string {
 	buff := bytes.NewBufferString("")
 
-	for _, errs := range ve.fieldErrs {
-		for _, err := range errs {
-			buff.WriteString(err)
-			buff.WriteString("\n")
-		}
+	for _, fieldErr := range ve.fieldErrs {
+		buff.WriteString(fieldErr)
+		buff.WriteString("\n")
 	}
 
 	return strings.TrimSpace(buff.String())
 }
 
-func (ve *validationError) WithFieldError(field string, err string) {
-	if ve.fieldErrs == nil {
-		ve.fieldErrs = make(map[string][]string)
-	}
-	errs, ok := ve.fieldErrs[field]
-	if !ok {
-		errs = make([]string, 0)
-	}
-	errs = append(errs, err)
-	ve.fieldErrs[field] = errs
+func (ve *validationError) WithFieldError(fieldErr string) {
+	ve.fieldErrs = append(ve.fieldErrs, fieldErr)
 }
 
 func (ve validationError) HasErrors() bool {
-	for _, errs := range ve.fieldErrs {
-		if len(errs) > 0 {
-			return true
-		}
+	if len(ve.fieldErrs) > 0 {
+		return true
 	}
 	return false
 }
@@ -72,19 +60,16 @@ func (ve validationError) ToProblem(trans ut.Translator) iris.Problem {
 }
 
 func (ve validationError) ToStatus(trans ut.Translator) (*status.Status, error) {
+	title, _ := trans.T("validation-error")
 	detail, _ := trans.T("validation-error-detail")
-	stt := status.New(codes.InvalidArgument, detail)
-	badRequest := &errdetails.BadRequest{
-		FieldViolations: make([]*errdetails.BadRequest_FieldViolation, 0),
-	}
-	for field, errs := range ve.fieldErrs {
-		for _, err := range errs {
-			fieldViolation := &errdetails.BadRequest_FieldViolation{
-				Field:       field,
-				Description: err,
-			}
-			badRequest.FieldViolations = append(badRequest.FieldViolations, fieldViolation)
+	stt := status.New(codes.FailedPrecondition, detail)
+	preconditionFailure := &errdetails.PreconditionFailure{}
+	for _, fieldErr := range ve.fieldErrs {
+		preconditionViolation := &errdetails.PreconditionFailure_Violation{
+			Type:        title,
+			Description: fieldErr,
 		}
+		preconditionFailure.Violations = append(preconditionFailure.Violations, preconditionViolation)
 	}
-	return stt.WithDetails(badRequest)
+	return stt.WithDetails(preconditionFailure)
 }
