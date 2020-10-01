@@ -25,14 +25,16 @@ func (eh errorHandler) HandleError(ctx iris.Context, err error) {
 	trans := eh.translatorMiddleware.Get(ctx.Request().Context())
 
 	if stt, ok := status.FromError(err); ok {
-		if serverErr, ok := errors.NewStatusError(stt); ok {
-			err = serverErr
+		if err, ok := errors.NewStatusError(stt); ok {
+			eh.HandleError(ctx, err)
+			return
 		}
 	}
 
-	if serverErr, ok := err.(errors.Error); ok {
-		problem := serverErr.ToProblem(trans)
-		err = problem
+	if err, ok := err.(errors.Error); ok {
+		problem := err.ToProblem(trans)
+		eh.HandleError(ctx, problem)
+		return
 	}
 
 	if _, ok := err.(iris.Problem); !ok {
@@ -42,9 +44,9 @@ func (eh errorHandler) HandleError(ctx iris.Context, err error) {
 		title, _ := trans.T("internal-error")
 		problem.Title(title)
 		problem.Detail(err.Error())
-		err = problem
+		eh.HandleError(ctx, problem)
+		return
 	}
 
 	ctx.Problem(err)
-
 }
