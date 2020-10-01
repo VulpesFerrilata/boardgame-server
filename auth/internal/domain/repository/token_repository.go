@@ -9,7 +9,7 @@ import (
 
 type AuthRepository interface {
 	CountByJti(ctx context.Context, jti string) (int, error)
-	GetById(ctx context.Context, id uint) (*model.Token, error)
+	GetByUserId(ctx context.Context, userId uint) (*model.Token, error)
 	GetByJti(ctx context.Context, jti string) (*model.Token, error)
 	CreateOrUpdate(context.Context, *model.Token) error
 }
@@ -25,14 +25,14 @@ type authRepository struct {
 }
 
 func (ar authRepository) CountByJti(ctx context.Context, jti string) (int, error) {
-	count := 0
+	var count int64
 	token := new(model.Token)
-	return count, ar.dbContext.GetDB(ctx).Find(token, "jti = ?", jti).Count(&count).Error
+	return int(count), ar.dbContext.GetDB(ctx).Find(token, "jti = ?", jti).Count(&count).Error
 }
 
-func (ar authRepository) GetById(ctx context.Context, id uint) (*model.Token, error) {
+func (ar authRepository) GetByUserId(ctx context.Context, userId uint) (*model.Token, error) {
 	token := new(model.Token)
-	return token, ar.dbContext.GetDB(ctx).First(token, id).Error
+	return token, ar.dbContext.GetDB(ctx).First(token, userId).Error
 }
 
 func (ar authRepository) GetByJti(ctx context.Context, jti string) (*model.Token, error) {

@@ -1,0 +1,27 @@
+[
+	{
+        "locale": "en",
+        "key": "not-found-error",
+        "trans": "not found error"
+    },
+	{
+        "locale": "en",
+        "key": "not-found-error-detail",
+        "trans": "{0} is not found"
+    },
+    {
+        "locale": "en",
+        "key": "validation-error",
+        "trans": "validation error"
+    },
+	{
+        "locale": "en",
+        "key": "validation-error-detail",
+        "trans": "one or more fields in the request contain invalid data"
+    },
+    {
+        "locale": "en",
+        "key": "internal-error",
+        "trans": "internal server error"
+    }
+]

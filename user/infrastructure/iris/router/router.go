@@ -3,7 +3,6 @@ package router
 import (
 	"database/sql"
 
-	"github.com/VulpesFerrilata/boardgame-server/library/pkg/iris/error_handler"
 	"github.com/VulpesFerrilata/boardgame-server/library/pkg/middleware"
 	"github.com/VulpesFerrilata/boardgame-server/user/infrastructure/iris/controller"
 	"github.com/kataras/iris/v12"
@@ -26,6 +25,7 @@ type router struct {
 	userController        controller.UserController
 	transactionMiddleware *middleware.TransactionMiddleware
 	translatorMiddleware  *middleware.TranslatorMiddleware
+	errorMiddleware       *middleware.ErrorMiddleware
 }
 
 func (r router) InitRoutes(app *iris.Application) {
@@ -35,8 +35,6 @@ func (r router) InitRoutes(app *iris.Application) {
 		r.translatorMiddleware.Serve,
 	)
 	mvcApp := mvc.New(apiRoot.Party("/user"))
-	mvcApp.ErrorHandler = error_handler.ErrorHandlerWrapper(
-		error_handler.NewDefaultErrorHandler(r.translatorMiddleware),
-	)
+	mvcApp.HandleError(r.errorMiddleware.ErrorHandler)
 	mvcApp.Handle(r.userController)
 }

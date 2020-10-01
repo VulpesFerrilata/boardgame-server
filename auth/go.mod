@@ -8,7 +8,7 @@ replace google.golang.org/grpc => google.golang.org/grpc v1.26.0
 
 require (
 	github.com/VulpesFerrilata/boardgame-server/grpc v0.0.0-20200916095637-c7b750ace889
-	github.com/VulpesFerrilata/boardgame-server/library v0.0.0-20200916095637-c7b750ace889
+	github.com/VulpesFerrilata/boardgame-server/library v0.0.0-20201001075342-28d87cbf3f13
 	github.com/andybalholm/brotli v1.0.1-0.20200619015827-c3da72aa01ed // indirect
 	github.com/dgrijalva/jwt-go v3.2.0+incompatible
 	github.com/google/uuid v1.1.2-0.20200519141726-cb32006e483f // indirect

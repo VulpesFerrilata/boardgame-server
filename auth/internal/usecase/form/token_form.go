@@ -30,7 +30,7 @@ func (tf TokenForm) ToToken(tokenSettings config.TokenSettings) (*model.Token, e
 	}
 
 	token := new(model.Token)
-	token.ID = uint(userId)
+	token.UserID = uint(userId)
 	token.Jti = claim.Id
 	return token, nil
 }

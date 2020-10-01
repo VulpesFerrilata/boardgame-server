@@ -4,7 +4,6 @@ import (
 	"database/sql"
 
 	"github.com/VulpesFerrilata/boardgame-server/auth/infrastructure/iris/controller"
-	"github.com/VulpesFerrilata/boardgame-server/library/pkg/iris/error_handler"
 	"github.com/VulpesFerrilata/boardgame-server/library/pkg/middleware"
 	"github.com/kataras/iris/v12"
 	"github.com/kataras/iris/v12/mvc"
@@ -14,11 +13,15 @@ type Router interface {
 	InitRoutes(app *iris.Application)
 }
 
-func NewRouter(authController controller.AuthController, transactionMiddleware *middleware.TransactionMiddleware, translatorMiddleware *middleware.TranslatorMiddleware) Router {
+func NewRouter(authController controller.AuthController,
+	transactionMiddleware *middleware.TransactionMiddleware,
+	translatorMiddleware *middleware.TranslatorMiddleware,
+	errorMiddleware *middleware.ErrorMiddleware) Router {
 	return &router{
 		authController:        authController,
 		transactionMiddleware: transactionMiddleware,
 		translatorMiddleware:  translatorMiddleware,
+		errorMiddleware:       errorMiddleware,
 	}
 }
 
@@ -26,6 +29,7 @@ type router struct {
 	authController        controller.AuthController
 	transactionMiddleware *middleware.TransactionMiddleware
 	translatorMiddleware  *middleware.TranslatorMiddleware
+	errorMiddleware       *middleware.ErrorMiddleware
 }
 
 func (r router) InitRoutes(app *iris.Application) {
@@ -35,8 +39,6 @@ func (r router) InitRoutes(app *iris.Application) {
 		r.translatorMiddleware.Serve,
 	)
 	mvcApp := mvc.New(apiRoot.Party("/auth"))
-	mvcApp.ErrorHandler = error_handler.ErrorHandlerWrapper(
-		error_handler.NewDefaultErrorHandler(r.translatorMiddleware),
-	)
+	mvcApp.HandleError(r.errorMiddleware.ErrorHandler)
 	mvcApp.Handle(r.authController)
 }

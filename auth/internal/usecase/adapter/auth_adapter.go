@@ -42,7 +42,7 @@ func (ap authAdapter) ParseCredentialRequest(ctx context.Context, credentialRequ
 	if err != nil {
 		return nil, err
 	}
-	token.ID = uint(userPb.ID)
+	token.UserID = uint(userPb.ID)
 
 	uuid, err := uuid.NewV4()
 	if err != nil {
@@ -89,14 +89,14 @@ func (ap authAdapter) ResponseToken(ctx context.Context, token *model.Token, acc
 
 func (ap authAdapter) ResponseClaim(ctx context.Context, token *model.Token) (*dto.ClaimDTO, error) {
 	ClaimDTO := new(dto.ClaimDTO)
-	ClaimDTO.UserID = int(token.ID)
+	ClaimDTO.UserID = int(token.UserID)
 	return ClaimDTO, nil
 }
 
 func (ap authAdapter) createToken(token *model.Token, tokenSettings config.TokenSettings) (string, error) {
 	claim := new(jwt.StandardClaims)
 	claim.Id = token.Jti
-	claim.Subject = string(token.ID)
+	claim.Subject = string(token.UserID)
 	claim.IssuedAt = time.Now().Unix()
 	claim.ExpiresAt = time.Now().Add(tokenSettings.Duration).Unix()
 

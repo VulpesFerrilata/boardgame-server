@@ -3,40 +3,42 @@ package service
 import (
 	"bytes"
 	"context"
+	"errors"
 
 	"github.com/VulpesFerrilata/boardgame-server/user/internal/domain/model"
 	"github.com/VulpesFerrilata/boardgame-server/user/internal/domain/repository"
+	"gorm.io/gorm"
 
 	server_errors "github.com/VulpesFerrilata/boardgame-server/library/pkg/errors"
-
-	"errors"
-
-	"gorm.io/gorm"
+	"github.com/VulpesFerrilata/boardgame-server/library/pkg/middleware"
 )
 
-func NewUserService(userRepo repository.UserRepository) *UserService {
+func NewUserService(userRepo repository.UserRepository,
+	translatorMiddleware *middleware.TranslatorMiddleware) *UserService {
 	return &UserService{
-		UserRepo: userRepo,
+		UserRepo:             userRepo,
+		translatorMiddleware: translatorMiddleware,
 	}
 }
 
 type UserService struct {
-	UserRepo repository.UserRepository
+	UserRepo             repository.UserRepository
+	translatorMiddleware *middleware.TranslatorMiddleware
 }
 
 func (us UserService) ValidateLogin(ctx context.Context, user *model.User) error {
-	validationErrs := new(server_errors.ValidationError)
-
+	trans := us.translatorMiddleware.Get(ctx)
+	validationErrs := server_errors.NewValidationError()
 	userDB, err := us.UserRepo.GetByUsername(ctx, user.Username)
 	if err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
-			validationErrs.Append("username is invalid")
-			return validationErrs
+			return server_errors.NewNotFoundError("user")
 		}
 		return err
 	}
 	if !bytes.Equal(user.HashPassword, userDB.HashPassword) {
-		validationErrs.Append("password is invalid")
+		fieldErr, _ := trans.T("validation-invalid", "password")
+		validationErrs.WithFieldError(fieldErr)
 	}
 
 	if validationErrs.HasErrors() {
@@ -47,14 +49,16 @@ func (us UserService) ValidateLogin(ctx context.Context, user *model.User) error
 }
 
 func (us UserService) Validate(ctx context.Context, user *model.User) error {
-	validationErrs := new(server_errors.ValidationError)
+	trans := us.translatorMiddleware.Get(ctx)
+	validationErrs := server_errors.NewValidationError()
 
 	count, err := us.UserRepo.CountByUsername(ctx, user.Username)
 	if err != nil {
 		return err
 	}
 	if count > 0 {
-		validationErrs.Append("username is already exists")
+		fieldErr, _ := trans.T("validation-already-exists", "username")
+		validationErrs.WithFieldError(fieldErr)
 	}
 
 	if validationErrs.HasErrors() {

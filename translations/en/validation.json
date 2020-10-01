@@ -6,7 +6,7 @@
     },
     {
         "locale": "en",
-        "key": "validation-not-exists",
-        "trans": "{0} is not exists"
+        "key": "validation-already-exists",
+        "trans": "{0} is already exists"
     }
 ]

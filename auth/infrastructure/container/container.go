@@ -45,6 +45,7 @@ func NewContainer() *dig.Container {
 	//--Middleware
 	container.Provide(middleware.NewTransactionMiddleware)
 	container.Provide(middleware.NewTranslatorMiddleware)
+	container.Provide(middleware.NewErrorMiddleware)
 
 	//--Controller
 	container.Provide(controller.NewAuthController)

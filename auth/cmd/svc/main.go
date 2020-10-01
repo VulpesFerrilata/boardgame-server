@@ -16,13 +16,17 @@ import (
 func main() {
 	container := container.NewContainer()
 
-	if err := container.Invoke(func(authHandler auth.AuthHandler, transactionMiddleware *middleware.TransactionMiddleware, translatorMiddleware *middleware.TranslatorMiddleware) error {
+	if err := container.Invoke(func(authHandler auth.AuthHandler,
+		transactionMiddleware *middleware.TransactionMiddleware,
+		translatorMiddleware *middleware.TranslatorMiddleware,
+		errorMiddleware *middleware.ErrorMiddleware) error {
 		// New Service
 		service := micro.NewService(
 			micro.Name("boardgame.auth.svc"),
 			micro.Version("latest"),
 			micro.Server(
 				grpc.NewServer(
+					server.WrapHandler(errorMiddleware.HandlerWrapper),
 					server.WrapHandler(transactionMiddleware.HandlerWrapperWithTxOptions(&sql.TxOptions{})),
 					server.WrapHandler(translatorMiddleware.HandlerWrapper),
 				),
