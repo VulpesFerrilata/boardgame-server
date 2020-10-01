@@ -60,3 +60,7 @@ func (se StatusError) ToProblem(trans ut.Translator) iris.Problem {
 
 	return problem
 }
+
+func (se StatusError) ToStatus(trans ut.Translator) *status.Status {
+	return se.stt
+}

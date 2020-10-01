@@ -59,7 +59,7 @@ func (ve validationError) ToProblem(trans ut.Translator) iris.Problem {
 	return problem
 }
 
-func (ve validationError) ToStatus(trans ut.Translator) (*status.Status, error) {
+func (ve validationError) ToStatus(trans ut.Translator) *status.Status {
 	title, _ := trans.T("validation-error")
 	detail, _ := trans.T("validation-error-detail")
 	stt := status.New(codes.FailedPrecondition, detail)
@@ -71,5 +71,9 @@ func (ve validationError) ToStatus(trans ut.Translator) (*status.Status, error) 
 		}
 		preconditionFailure.Violations = append(preconditionFailure.Violations, preconditionViolation)
 	}
-	return stt.WithDetails(preconditionFailure)
+	detailStt, err := stt.WithDetails(preconditionFailure)
+	if err != nil {
+		return stt
+	}
+	return detailStt
 }
