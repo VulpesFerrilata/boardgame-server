@@ -37,33 +37,7 @@ func (em ErrorMiddleware) ErrorHandler(ctx iris.Context, err error) {
 	if err == nil {
 		return
 	}
-	trans := em.translatorMiddleware.Get(ctx.Request().Context())
-
-	if stt, ok := status.FromError(err); ok {
-		if err, ok := errors.NewStatusError(stt); ok {
-			em.ErrorHandler(ctx, err)
-			return
-		}
-	}
-
-	if err, ok := err.(errors.Error); ok {
-		problem := err.ToProblem(trans)
-		em.ErrorHandler(ctx, problem)
-		return
-	}
-
-	if _, ok := err.(iris.Problem); !ok {
-		problem := iris.NewProblem()
-		problem.Status(iris.StatusInternalServerError)
-		problem.Type("about:blank")
-		title, _ := trans.T("internal-error")
-		problem.Title(title)
-		problem.Detail(err.Error())
-		em.ErrorHandler(ctx, problem)
-		return
-	}
-
-	ctx.Problem(err)
+	em.errorHandler.handle(ctx, err)
 }
 
 func newErrorHandler(translatorMiddleware *TranslatorMiddleware) errorHandler {
