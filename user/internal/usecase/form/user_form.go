@@ -5,7 +5,7 @@ import (
 )
 
 type UserForm struct {
-	ID int `name:"id"`
+	ID int `name:"id" validate:"required,gt=0"`
 }
 
 func (uf UserForm) ToUser() (*model.User, error) {

@@ -7,8 +7,8 @@ import (
 )
 
 type LoginForm struct {
-	Username string `name:"username"`
-	Password string `name:"password"`
+	Username string `name:"username" validate:"required"`
+	Password string `name:"password" validate:"required"`
 }
 
 func (lf LoginForm) ToUser() (*model.User, error) {

@@ -4,7 +4,7 @@ import "github.com/VulpesFerrilata/boardgame-server/user/internal/domain/model"
 
 type RegisterForm struct {
 	*LoginForm
-	RepeatPassword string `name:"repeat password"`
+	RepeatPassword string `name:"repeat password" validate:"eqfield=Password"`
 }
 
 func (rf RegisterForm) ToUser() (*model.User, error) {

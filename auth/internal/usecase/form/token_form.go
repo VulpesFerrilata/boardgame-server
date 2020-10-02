@@ -9,7 +9,7 @@ import (
 )
 
 type TokenForm struct {
-	Token string
+	Token string `name:"token" validate:"required"`
 }
 
 func (tf TokenForm) ToToken(tokenSettings config.TokenSettings) (*model.Token, error) {
