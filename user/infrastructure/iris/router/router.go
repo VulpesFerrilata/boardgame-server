@@ -13,11 +13,15 @@ type Router interface {
 	InitRoutes(app *iris.Application)
 }
 
-func NewRouter(userController controller.UserController, transactionMiddleware *middleware.TransactionMiddleware, translatorMiddleware *middleware.TranslatorMiddleware) Router {
+func NewRouter(userController controller.UserController,
+	transactionMiddleware *middleware.TransactionMiddleware,
+	translatorMiddleware *middleware.TranslatorMiddleware,
+	errorMiddleware *middleware.ErrorMiddleware) Router {
 	return &router{
 		userController:        userController,
 		transactionMiddleware: transactionMiddleware,
 		translatorMiddleware:  translatorMiddleware,
+		errorMiddleware:       errorMiddleware,
 	}
 }
 
