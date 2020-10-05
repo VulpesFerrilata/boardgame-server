@@ -5,13 +5,19 @@ import (
 	"github.com/VulpesFerrilata/boardgame-server/user/internal/usecase/form"
 )
 
+func NewCredentialRequest(credentialRequestPb *user.CredentialRequest) *CredentialRequest {
+	return &CredentialRequest{
+		credentialRequestPb: credentialRequestPb,
+	}
+}
+
 type CredentialRequest struct {
-	*user.CredentialRequest
+	credentialRequestPb *user.CredentialRequest
 }
 
 func (cr CredentialRequest) ToLoginForm() *form.LoginForm {
 	loginForm := new(form.LoginForm)
-	loginForm.Username = cr.Username
-	loginForm.Password = cr.Password
+	loginForm.Username = cr.credentialRequestPb.GetUsername()
+	loginForm.Password = cr.credentialRequestPb.GetPassword()
 	return loginForm
 }

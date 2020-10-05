@@ -1,12 +1,12 @@
 package service
 
 import (
-	"bytes"
 	"context"
 	"errors"
 
 	"github.com/VulpesFerrilata/boardgame-server/user/internal/domain/model"
 	"github.com/VulpesFerrilata/boardgame-server/user/internal/domain/repository"
+	"golang.org/x/crypto/bcrypt"
 	"gorm.io/gorm"
 
 	server_errors "github.com/VulpesFerrilata/boardgame-server/library/pkg/errors"
@@ -26,7 +26,7 @@ type UserService struct {
 	translatorMiddleware *middleware.TranslatorMiddleware
 }
 
-func (us UserService) ValidateLogin(ctx context.Context, user *model.User) error {
+func (us UserService) ValidateLogin(ctx context.Context, user *model.User, plainPassword string) error {
 	trans := us.translatorMiddleware.Get(ctx)
 	validationErrs := server_errors.NewValidationError()
 	userDB, err := us.UserRepo.GetByUsername(ctx, user.Username)
@@ -36,7 +36,7 @@ func (us UserService) ValidateLogin(ctx context.Context, user *model.User) error
 		}
 		return err
 	}
-	if !bytes.Equal(user.HashPassword, userDB.HashPassword) {
+	if err := bcrypt.CompareHashAndPassword(userDB.HashPassword, []byte(plainPassword)); err != nil {
 		fieldErr, _ := trans.T("validation-invalid", "password")
 		validationErrs.WithFieldError(fieldErr)
 	}

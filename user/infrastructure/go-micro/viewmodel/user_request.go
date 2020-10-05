@@ -5,12 +5,18 @@ import (
 	"github.com/VulpesFerrilata/boardgame-server/user/internal/usecase/form"
 )
 
+func NewUserRequest(userRequestPb *user.UserRequest) *UserRequest {
+	return &UserRequest{
+		userRequestPb: userRequestPb,
+	}
+}
+
 type UserRequest struct {
-	*user.UserRequest
+	userRequestPb *user.UserRequest
 }
 
 func (ur UserRequest) ToUserForm() *form.UserForm {
 	userForm := new(form.UserForm)
-	userForm.ID = int(ur.ID)
+	userForm.ID = int(ur.userRequestPb.GetID())
 	return userForm
 }

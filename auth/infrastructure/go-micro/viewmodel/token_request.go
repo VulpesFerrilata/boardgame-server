@@ -5,12 +5,18 @@ import (
 	"github.com/VulpesFerrilata/boardgame-server/grpc/protoc/auth"
 )
 
+func NewTokenRequest(tokenRequestPb *auth.TokenRequest) *TokenRequest {
+	return &TokenRequest{
+		tokenRequestPb: tokenRequestPb,
+	}
+}
+
 type TokenRequest struct {
-	*auth.TokenRequest
+	tokenRequestPb *auth.TokenRequest
 }
 
 func (tr TokenRequest) ToTokenForm() *form.TokenForm {
 	tokenForm := new(form.TokenForm)
-	tokenForm.Token = tr.GetToken()
+	tokenForm.Token = tr.tokenRequestPb.GetToken()
 	return tokenForm
 }

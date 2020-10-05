@@ -19,25 +19,27 @@ type userHandler struct {
 }
 
 func (uh userHandler) GetUserById(ctx context.Context, userRequestPb *user.UserRequest, userResponsePb *user.UserResponse) error {
-	userRequestVM := viewmodel.UserRequest{
-		UserRequest: userRequestPb,
-	}
+	userRequestVM := viewmodel.NewUserRequest(userRequestPb)
+
 	userDTO, err := uh.userInteractor.GetUserById(ctx, userRequestVM.ToUserForm())
 	if err != nil {
 		return err
 	}
-	userResponsePb = viewmodel.NewUserResponse(userDTO).UserResponse
+
+	userResponseVM := viewmodel.NewUserResponse(userResponsePb)
+	userResponseVM.FromUserDTO(userDTO)
 	return nil
 }
 
 func (uh userHandler) GetUserByCredential(ctx context.Context, credentialRequestPb *user.CredentialRequest, userResponsePb *user.UserResponse) error {
-	credentialRequestVM := viewmodel.CredentialRequest{
-		CredentialRequest: credentialRequestPb,
-	}
+	credentialRequestVM := viewmodel.NewCredentialRequest(credentialRequestPb)
+
 	userDTO, err := uh.userInteractor.GetUserByCredential(ctx, credentialRequestVM.ToLoginForm())
 	if err != nil {
 		return err
 	}
-	userResponsePb = viewmodel.NewUserResponse(userDTO).UserResponse
+
+	userResponseVM := viewmodel.NewUserResponse(userResponsePb)
+	userResponseVM.FromUserDTO(userDTO)
 	return nil
 }

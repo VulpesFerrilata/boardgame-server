@@ -22,8 +22,6 @@ func main() {
 		errorMiddleware *middleware.ErrorMiddleware) error {
 		// New Service
 		service := micro.NewService(
-			micro.Name("boardgame.user.svc"),
-			micro.Version("latest"),
 			micro.Server(
 				grpc.NewServer(
 					server.WrapHandler(errorMiddleware.HandlerWrapper),
@@ -31,6 +29,8 @@ func main() {
 					server.WrapHandler(transactionMiddleware.HandlerWrapperWithTxOptions(&sql.TxOptions{})),
 				),
 			),
+			micro.Name("boardgame.user.svc"),
+			micro.Version("latest"),
 		)
 
 		// Initialise service

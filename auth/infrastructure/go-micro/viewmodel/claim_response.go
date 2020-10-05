@@ -5,11 +5,16 @@ import (
 	"github.com/VulpesFerrilata/boardgame-server/grpc/protoc/auth"
 )
 
-func NewClaimResponse(claimDto *dto.ClaimDTO) *ClaimResponse {
-	claimResponse := new(ClaimResponse)
-	return claimResponse
+func NewClaimResponse(claimResponsePb *auth.ClaimResponse) *ClaimResponse {
+	return &ClaimResponse{
+		claimResponsePb: claimResponsePb,
+	}
 }
 
 type ClaimResponse struct {
-	*auth.ClaimResponse
+	claimResponsePb *auth.ClaimResponse
+}
+
+func (cr *ClaimResponse) FromClaimDTO(claimDTO *dto.ClaimDTO) {
+	cr.claimResponsePb.UserID = int64(claimDTO.UserID)
 }

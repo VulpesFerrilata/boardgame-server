@@ -16,29 +16,32 @@ type AuthInteractor interface {
 	Refresh(ctx context.Context, tokenForm *form.TokenForm) (*dto.TokenDTO, error)
 }
 
-func NewAuthInteractor(authService *service.AuthService, authAdapter adapter.AuthAdapter) AuthInteractor {
+func NewAuthInteractor(authService *service.AuthService, authAdapter adapter.AuthAdapter, userService user.UserService) AuthInteractor {
 	return &authInteractor{
 		authService: authService,
 		authAdapter: authAdapter,
+		userService: userService,
 	}
 }
 
 type authInteractor struct {
 	authService *service.AuthService
 	authAdapter adapter.AuthAdapter
+	userService user.UserService
 }
 
 func (ai authInteractor) Login(ctx context.Context, credentialRequest *user.CredentialRequest) (*dto.TokenDTO, error) {
-	token, err := ai.authAdapter.ParseCredentialRequest(ctx, credentialRequest)
+	userPb, err := ai.userService.GetUserByCredential(ctx, credentialRequest)
 	if err != nil {
 		return nil, err
 	}
 
-	if err := ai.authService.Validate(ctx, token); err != nil {
+	token, err := ai.authAdapter.ParseUserPb(ctx, userPb)
+	if err != nil {
 		return nil, err
 	}
 
-	if err := ai.authService.AuthRepo.CreateOrUpdate(ctx, token); err != nil {
+	if err := ai.authService.CreateOrUpdate(ctx, token); err != nil {
 		return nil, err
 	}
 	return ai.authAdapter.ResponseToken(ctx, token, false)

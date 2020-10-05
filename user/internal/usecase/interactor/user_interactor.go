@@ -48,7 +48,7 @@ func (ui userInteractor) GetUserByCredential(ctx context.Context, loginForm *for
 		return nil, err
 	}
 
-	if err := ui.userService.ValidateLogin(ctx, user); err != nil {
+	if err := ui.userService.ValidateLogin(ctx, user, loginForm.Password); err != nil {
 		return nil, err
 	}
 

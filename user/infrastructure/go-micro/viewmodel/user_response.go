@@ -5,12 +5,16 @@ import (
 	"github.com/VulpesFerrilata/boardgame-server/user/internal/usecase/dto"
 )
 
-func NewUserResponse(userDTO *dto.UserDTO) *UserResponse {
-	userResponsePb := new(UserResponse)
-	userResponsePb.ID = int64(userDTO.ID)
-	return userResponsePb
+func NewUserResponse(userResponsePb *user.UserResponse) *UserResponse {
+	return &UserResponse{
+		userResponsePb: userResponsePb,
+	}
 }
 
 type UserResponse struct {
-	*user.UserResponse
+	userResponsePb *user.UserResponse
+}
+
+func (ur *UserResponse) FromUserDTO(userDTO *dto.UserDTO) {
+	ur.userResponsePb.ID = int64(userDTO.ID)
 }

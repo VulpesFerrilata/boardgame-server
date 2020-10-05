@@ -19,15 +19,14 @@ type authHandler struct {
 }
 
 func (ah authHandler) Authenticate(ctx context.Context, tokenRequestPb *auth.TokenRequest, claimResponsePb *auth.ClaimResponse) error {
-	tokenRequestVM := viewmodel.TokenRequest{
-		TokenRequest: tokenRequestPb,
-	}
+	tokenRequestVM := viewmodel.NewTokenRequest(tokenRequestPb)
 
 	claimDTO, err := ah.authInteractor.Authenticate(ctx, tokenRequestVM.ToTokenForm())
 	if err != nil {
 		return err
 	}
 
-	claimResponsePb = viewmodel.NewClaimResponse(claimDTO).ClaimResponse
+	claimResponseVM := viewmodel.NewClaimResponse(claimResponsePb)
+	claimResponseVM.FromClaimDTO(claimDTO)
 	return nil
 }

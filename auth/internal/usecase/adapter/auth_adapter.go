@@ -15,33 +15,27 @@ import (
 )
 
 type AuthAdapter interface {
-	ParseCredentialRequest(ctx context.Context, credentialRequest *user.CredentialRequest) (*model.Token, error)
+	ParseUserPb(ctx context.Context, userPb *user.UserResponse) (*model.Token, error)
 	ParseAccessToken(ctx context.Context, tokenForm *form.TokenForm) (*model.Token, error)
 	ParseRefreshToken(ctx context.Context, tokenForm *form.TokenForm) (*model.Token, error)
 	ResponseToken(ctx context.Context, token *model.Token, accessTokenOnly bool) (*dto.TokenDTO, error)
 	ResponseClaim(ctx context.Context, token *model.Token) (*dto.ClaimDTO, error)
 }
 
-func NewAuthAdapter(jwtCfg *config.JwtConfig, validate validator.Validate, userService user.UserService) AuthAdapter {
+func NewAuthAdapter(jwtCfg *config.JwtConfig, validate validator.Validate) AuthAdapter {
 	return &authAdapter{
-		jwtCfg:      jwtCfg,
-		validate:    validate,
-		userService: userService,
+		jwtCfg:   jwtCfg,
+		validate: validate,
 	}
 }
 
 type authAdapter struct {
-	jwtCfg      *config.JwtConfig
-	validate    validator.Validate
-	userService user.UserService
+	jwtCfg   *config.JwtConfig
+	validate validator.Validate
 }
 
-func (ap authAdapter) ParseCredentialRequest(ctx context.Context, credentialRequest *user.CredentialRequest) (*model.Token, error) {
+func (ap authAdapter) ParseUserPb(ctx context.Context, userPb *user.UserResponse) (*model.Token, error) {
 	token := new(model.Token)
-	userPb, err := ap.userService.GetUserByCredential(ctx, credentialRequest)
-	if err != nil {
-		return nil, err
-	}
 	token.UserID = uint(userPb.ID)
 
 	uuid, err := uuid.NewV4()
