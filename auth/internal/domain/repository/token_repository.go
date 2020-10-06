@@ -7,39 +7,39 @@ import (
 	"github.com/VulpesFerrilata/boardgame-server/library/pkg/db"
 )
 
-type AuthRepository interface {
+type TokenRepository interface {
 	CountByJti(ctx context.Context, jti string) (int, error)
 	GetByUserId(ctx context.Context, userId uint) (*model.Token, error)
 	GetByJti(ctx context.Context, jti string) (*model.Token, error)
-	CreateOrUpdate(context.Context, *model.Token) error
+	Save(context.Context, *model.Token) error
 }
 
-func NewAuthRepository(dbContext *db.DbContext) AuthRepository {
-	return &authRepository{
+func NewTokenRepository(dbContext *db.DbContext) TokenRepository {
+	return &tokenRepository{
 		dbContext: dbContext,
 	}
 }
 
-type authRepository struct {
+type tokenRepository struct {
 	dbContext *db.DbContext
 }
 
-func (ar authRepository) CountByJti(ctx context.Context, jti string) (int, error) {
+func (tr tokenRepository) CountByJti(ctx context.Context, jti string) (int, error) {
 	var count int64
 	token := new(model.Token)
-	return int(count), ar.dbContext.GetDB(ctx).Find(token, "jti = ?", jti).Count(&count).Error
+	return int(count), tr.dbContext.GetDB(ctx).Find(token, "jti = ?", jti).Count(&count).Error
 }
 
-func (ar authRepository) GetByUserId(ctx context.Context, userId uint) (*model.Token, error) {
+func (tr tokenRepository) GetByUserId(ctx context.Context, userId uint) (*model.Token, error) {
 	token := new(model.Token)
-	return token, ar.dbContext.GetDB(ctx).First(token, userId).Error
+	return token, tr.dbContext.GetDB(ctx).First(token, userId).Error
 }
 
-func (ar authRepository) GetByJti(ctx context.Context, jti string) (*model.Token, error) {
+func (tr tokenRepository) GetByJti(ctx context.Context, jti string) (*model.Token, error) {
 	token := new(model.Token)
-	return token, ar.dbContext.GetDB(ctx).First(token, "jti = ?", jti).Error
+	return token, tr.dbContext.GetDB(ctx).First(token, "jti = ?", jti).Error
 }
 
-func (ar authRepository) CreateOrUpdate(ctx context.Context, token *model.Token) error {
-	return ar.dbContext.GetDB(ctx).Save(token).Error
+func (tr tokenRepository) Save(ctx context.Context, token *model.Token) error {
+	return tr.dbContext.GetDB(ctx).Save(token).Error
 }

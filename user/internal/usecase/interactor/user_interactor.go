@@ -15,7 +15,7 @@ type UserInteractor interface {
 	Register(ctx context.Context, registerForm *form.RegisterForm) (*dto.UserDTO, error)
 }
 
-func NewUserInteractor(userService *service.UserService,
+func NewUserInteractor(userService service.UserService,
 	userAdapter adapter.UserAdapter) UserInteractor {
 	return &userInteractor{
 		userService: userService,
@@ -24,7 +24,7 @@ func NewUserInteractor(userService *service.UserService,
 }
 
 type userInteractor struct {
-	userService *service.UserService
+	userService service.UserService
 	userAdapter adapter.UserAdapter
 }
 
@@ -34,7 +34,7 @@ func (ui userInteractor) GetUserById(ctx context.Context, userForm *form.UserFor
 		return nil, err
 	}
 
-	user, err = ui.userService.UserRepo.GetById(ctx, user.ID)
+	user, err = ui.userService.GetUserRepository().GetById(ctx, user.ID)
 	if err != nil {
 		return nil, err
 	}
@@ -52,7 +52,7 @@ func (ui userInteractor) GetUserByCredential(ctx context.Context, loginForm *for
 		return nil, err
 	}
 
-	user, err = ui.userService.UserRepo.GetByUsername(ctx, user.Username)
+	user, err = ui.userService.GetUserRepository().GetByUsername(ctx, user.Username)
 	if err != nil {
 		return nil, err
 	}
@@ -70,7 +70,7 @@ func (ui userInteractor) Register(ctx context.Context, registerForm *form.Regist
 		return nil, err
 	}
 
-	if err := ui.userService.UserRepo.Insert(ctx, user); err != nil {
+	if err := ui.userService.GetUserRepository().Insert(ctx, user); err != nil {
 		return nil, err
 	}
 

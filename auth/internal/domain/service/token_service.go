@@ -11,23 +11,33 @@ import (
 	"gorm.io/gorm"
 )
 
-func NewAuthService(authRepo repository.AuthRepository,
-	translatorMiddleware *middleware.TranslatorMiddleware) *AuthService {
-	return &AuthService{
-		AuthRepo:             authRepo,
+type AuthService interface {
+	GetAuthRepository() repository.TokenRepository
+	ValidateAuthenticate(ctx context.Context, token *model.Token) error
+	CreateOrUpdate(ctx context.Context, token *model.Token) error
+}
+
+func NewAuthService(tokenRepository repository.TokenRepository,
+	translatorMiddleware *middleware.TranslatorMiddleware) AuthService {
+	return &authService{
+		tokenRepository:      tokenRepository,
 		translatorMiddleware: translatorMiddleware,
 	}
 }
 
-type AuthService struct {
-	AuthRepo             repository.AuthRepository
+type authService struct {
+	tokenRepository      repository.TokenRepository
 	translatorMiddleware *middleware.TranslatorMiddleware
 }
 
-func (as AuthService) ValidateAuthenticate(ctx context.Context, token *model.Token) error {
+func (as authService) GetAuthRepository() repository.TokenRepository {
+	return as.tokenRepository
+}
+
+func (as authService) ValidateAuthenticate(ctx context.Context, token *model.Token) error {
 	trans := as.translatorMiddleware.Get(ctx)
 	validationErrs := server_errors.NewValidationError()
-	tokenDB, err := as.AuthRepo.GetByUserId(ctx, token.UserID)
+	tokenDB, err := as.tokenRepository.GetByUserId(ctx, token.UserID)
 	if err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
 			return server_errors.NewNotFoundError("token")
@@ -45,11 +55,11 @@ func (as AuthService) ValidateAuthenticate(ctx context.Context, token *model.Tok
 	return nil
 }
 
-func (as AuthService) CreateOrUpdate(ctx context.Context, token *model.Token) error {
-	tokenDB, err := as.AuthRepo.GetByUserId(ctx, token.UserID)
+func (as authService) CreateOrUpdate(ctx context.Context, token *model.Token) error {
+	tokenDB, err := as.tokenRepository.GetByUserId(ctx, token.UserID)
 	if err != nil && !errors.Is(err, gorm.ErrRecordNotFound) {
 		return err
 	}
 	token.ID = tokenDB.ID
-	return as.AuthRepo.CreateOrUpdate(ctx, token)
+	return as.tokenRepository.Save(ctx, token)
 }

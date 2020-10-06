@@ -13,23 +13,33 @@ import (
 	"github.com/VulpesFerrilata/boardgame-server/library/pkg/middleware"
 )
 
-func NewUserService(userRepo repository.UserRepository,
-	translatorMiddleware *middleware.TranslatorMiddleware) *UserService {
-	return &UserService{
-		UserRepo:             userRepo,
+type UserService interface {
+	GetUserRepository() repository.UserRepository
+	ValidateLogin(ctx context.Context, user *model.User, plainPassword string) error
+	Validate(ctx context.Context, user *model.User) error
+}
+
+func NewUserService(userRepository repository.UserRepository,
+	translatorMiddleware *middleware.TranslatorMiddleware) UserService {
+	return &userService{
+		userRepository:       userRepository,
 		translatorMiddleware: translatorMiddleware,
 	}
 }
 
-type UserService struct {
-	UserRepo             repository.UserRepository
+type userService struct {
+	userRepository       repository.UserRepository
 	translatorMiddleware *middleware.TranslatorMiddleware
 }
 
-func (us UserService) ValidateLogin(ctx context.Context, user *model.User, plainPassword string) error {
+func (us userService) GetUserRepository() repository.UserRepository {
+	return us.userRepository
+}
+
+func (us userService) ValidateLogin(ctx context.Context, user *model.User, plainPassword string) error {
 	trans := us.translatorMiddleware.Get(ctx)
 	validationErrs := server_errors.NewValidationError()
-	userDB, err := us.UserRepo.GetByUsername(ctx, user.Username)
+	userDB, err := us.userRepository.GetByUsername(ctx, user.Username)
 	if err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
 			return server_errors.NewNotFoundError("user")
@@ -48,11 +58,11 @@ func (us UserService) ValidateLogin(ctx context.Context, user *model.User, plain
 	return nil
 }
 
-func (us UserService) Validate(ctx context.Context, user *model.User) error {
+func (us userService) Validate(ctx context.Context, user *model.User) error {
 	trans := us.translatorMiddleware.Get(ctx)
 	validationErrs := server_errors.NewValidationError()
 
-	count, err := us.UserRepo.CountByUsername(ctx, user.Username)
+	count, err := us.userRepository.CountByUsername(ctx, user.Username)
 	if err != nil {
 		return err
 	}

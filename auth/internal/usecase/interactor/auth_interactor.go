@@ -16,7 +16,7 @@ type AuthInteractor interface {
 	Refresh(ctx context.Context, tokenForm *form.TokenForm) (*dto.TokenDTO, error)
 }
 
-func NewAuthInteractor(authService *service.AuthService, authAdapter adapter.AuthAdapter, userService user.UserService) AuthInteractor {
+func NewAuthInteractor(authService service.AuthService, authAdapter adapter.AuthAdapter, userService user.UserService) AuthInteractor {
 	return &authInteractor{
 		authService: authService,
 		authAdapter: authAdapter,
@@ -25,7 +25,7 @@ func NewAuthInteractor(authService *service.AuthService, authAdapter adapter.Aut
 }
 
 type authInteractor struct {
-	authService *service.AuthService
+	authService service.AuthService
 	authAdapter adapter.AuthAdapter
 	userService user.UserService
 }
