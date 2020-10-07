@@ -5,7 +5,7 @@ import (
 )
 
 type Token struct {
-	gorm.Model
+	*gorm.Model
 	UserID uint   `gorm:"uniqueIndex"`
 	Jti    string `gorm:"uniqueIndex"`
 }
