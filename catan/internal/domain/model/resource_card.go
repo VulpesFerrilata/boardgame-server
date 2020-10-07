@@ -3,7 +3,7 @@ package model
 import "gorm.io/gorm"
 
 type ResourceCard struct {
-	gorm.Model
+	*gorm.Model
 	GameID       uint
 	PlayerID     uint
 	ResourceType ResourceType

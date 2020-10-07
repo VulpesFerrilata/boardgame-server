@@ -3,7 +3,8 @@ package model
 import "gorm.io/gorm"
 
 type Dice struct {
-	gorm.Model
-	GameID uint
-	Number int
+	*gorm.Model
+	GameID   uint
+	Number   int
+	IsRolled bool
 }

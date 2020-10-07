@@ -3,7 +3,7 @@ package model
 import "gorm.io/gorm"
 
 type Road struct {
-	gorm.Model
+	*gorm.Model
 	GameID   uint
 	PlayerID uint
 	Q        int

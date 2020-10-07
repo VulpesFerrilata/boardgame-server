@@ -3,7 +3,7 @@ package model
 import "gorm.io/gorm"
 
 type Achievement struct {
-	gorm.Model
+	*gorm.Model
 	GameID      uint
 	PlayerID    uint
 	Type        AchievementType
