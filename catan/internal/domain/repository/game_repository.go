@@ -7,8 +7,12 @@ import (
 	"github.com/VulpesFerrilata/boardgame-server/library/pkg/db"
 )
 
-type GameRepository interface {
+type ReadOnlyGameRepository interface {
 	GetById(ctx context.Context, id uint) (*model.Game, error)
+}
+
+type GameRepository interface {
+	ReadOnlyGameRepository
 	Insert(ctx context.Context, game *model.Game) error
 }
 

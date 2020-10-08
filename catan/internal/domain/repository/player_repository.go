@@ -7,7 +7,14 @@ import (
 	"github.com/VulpesFerrilata/boardgame-server/library/pkg/db"
 )
 
+type ReadOnlyPlayerRepository interface {
+	GetByUserId(ctx context.Context, userId uint) (*model.Player, error)
+}
+
 type PlayerRepository interface {
+	ReadOnlyPlayerRepository
+	Insert(ctx context.Context, players ...*model.Player) error
+	Save(ctx context.Context, players ...*model.Player) error
 }
 
 func NewPlayerRepository(db *db.DbContext) PlayerRepository {

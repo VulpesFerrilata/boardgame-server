@@ -8,7 +8,8 @@ import (
 )
 
 type GameService interface {
-	GetGameRepository() repository.GameRepository
+	IsExists(ctx context.Context, game *model.Game) (bool, error)
+	GetGameRepository() repository.ReadOnlyGameRepository
 	New(ctx context.Context) (*model.Game, error)
 }
 
@@ -22,7 +23,7 @@ type gameService struct {
 	gameRepository repository.GameRepository
 }
 
-func (gs gameService) GetGameRepository() repository.GameRepository {
+func (gs gameService) GetGameRepository() repository.ReadOnlyGameRepository {
 	return gs.gameRepository
 }
 

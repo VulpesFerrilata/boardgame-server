@@ -9,7 +9,7 @@ import (
 )
 
 type DiceService interface {
-	GetDiceRepository() repository.DiceRepository
+	GetDiceRepository() repository.ReadOnlyDiceRepository
 	Init(ctx context.Context, gameId uint) ([]*model.Dice, error)
 	Roll(ctx context.Context, gameId uint) ([]*model.Dice, error)
 	ResetState(ctx context.Context, gameId uint) ([]*model.Dice, error)
@@ -25,7 +25,7 @@ type diceService struct {
 	diceRepository repository.DiceRepository
 }
 
-func (ds diceService) GetDiceRepository() repository.DiceRepository {
+func (ds diceService) GetDiceRepository() repository.ReadOnlyDiceRepository {
 	return ds.diceRepository
 }
 
