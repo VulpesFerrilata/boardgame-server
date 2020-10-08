@@ -14,9 +14,9 @@ import (
 )
 
 type UserService interface {
-	GetUserRepository() repository.UserRepository
+	GetUserRepository() repository.ReadOnlyUserRepository
 	ValidateLogin(ctx context.Context, user *model.User, plainPassword string) error
-	Validate(ctx context.Context, user *model.User) error
+	Create(ctx context.Context, user *model.User) error
 }
 
 func NewUserService(userRepository repository.UserRepository,
@@ -32,7 +32,7 @@ type userService struct {
 	translatorMiddleware *middleware.TranslatorMiddleware
 }
 
-func (us userService) GetUserRepository() repository.UserRepository {
+func (us userService) GetUserRepository() repository.ReadOnlyUserRepository {
 	return us.userRepository
 }
 
@@ -58,7 +58,7 @@ func (us userService) ValidateLogin(ctx context.Context, user *model.User, plain
 	return nil
 }
 
-func (us userService) Validate(ctx context.Context, user *model.User) error {
+func (us userService) validate(ctx context.Context, user *model.User) error {
 	trans := us.translatorMiddleware.Get(ctx)
 	validationErrs := server_errors.NewValidationError()
 
@@ -75,4 +75,11 @@ func (us userService) Validate(ctx context.Context, user *model.User) error {
 		return validationErrs
 	}
 	return nil
+}
+
+func (us userService) Create(ctx context.Context, user *model.User) error {
+	if err := us.validate(ctx, user); err != nil {
+		return err
+	}
+	return us.userRepository.Insert(ctx, user)
 }

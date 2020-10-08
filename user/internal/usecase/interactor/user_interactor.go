@@ -66,11 +66,7 @@ func (ui userInteractor) Register(ctx context.Context, registerForm *form.Regist
 		return nil, err
 	}
 
-	if err := ui.userService.Validate(ctx, user); err != nil {
-		return nil, err
-	}
-
-	if err := ui.userService.GetUserRepository().Insert(ctx, user); err != nil {
+	if err := ui.userService.Create(ctx, user); err != nil {
 		return nil, err
 	}
 

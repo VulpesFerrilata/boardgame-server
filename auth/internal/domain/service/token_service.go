@@ -12,7 +12,7 @@ import (
 )
 
 type AuthService interface {
-	GetAuthRepository() repository.TokenRepository
+	GetAuthRepository() repository.ReadOnlyTokenRepository
 	ValidateAuthenticate(ctx context.Context, token *model.Token) error
 	CreateOrUpdate(ctx context.Context, token *model.Token) error
 }
@@ -30,7 +30,7 @@ type authService struct {
 	translatorMiddleware *middleware.TranslatorMiddleware
 }
 
-func (as authService) GetAuthRepository() repository.TokenRepository {
+func (as authService) GetAuthRepository() repository.ReadOnlyTokenRepository {
 	return as.tokenRepository
 }
 

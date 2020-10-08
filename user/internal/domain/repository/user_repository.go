@@ -8,11 +8,15 @@ import (
 	"github.com/VulpesFerrilata/boardgame-server/library/pkg/db"
 )
 
-type UserRepository interface {
+type ReadOnlyUserRepository interface {
 	CountByUsername(ctx context.Context, username string) (int, error)
 	GetById(ctx context.Context, id uint) (*model.User, error)
 	GetByUsername(ctx context.Context, username string) (*model.User, error)
 	FindAll(context.Context) ([]*model.User, error)
+}
+
+type UserRepository interface {
+	ReadOnlyUserRepository
 	Insert(context.Context, *model.User) error
 }
 

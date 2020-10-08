@@ -7,11 +7,15 @@ import (
 	"github.com/VulpesFerrilata/boardgame-server/library/pkg/db"
 )
 
-type TokenRepository interface {
+type ReadOnlyTokenRepository interface {
 	CountByJti(ctx context.Context, jti string) (int, error)
 	GetByUserId(ctx context.Context, userId uint) (*model.Token, error)
 	GetByJti(ctx context.Context, jti string) (*model.Token, error)
-	Save(context.Context, *model.Token) error
+}
+
+type TokenRepository interface {
+	ReadOnlyTokenRepository
+	Save(ctx context.Context, token *model.Token) error
 }
 
 func NewTokenRepository(dbContext *db.DbContext) TokenRepository {
