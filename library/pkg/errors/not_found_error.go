@@ -15,15 +15,15 @@ func NewNotFoundError(name string) Error {
 	}
 }
 
-type notFoundError struct {
+type NotFoundError struct {
 	name string
 }
 
-func (nfe notFoundError) Error() string {
+func (nfe NotFoundError) Error() string {
 	return fmt.Sprintf("%s not found", nfe.name)
 }
 
-func (nfe notFoundError) ToProblem(trans ut.Translator) iris.Problem {
+func (nfe NotFoundError) ToProblem(trans ut.Translator) iris.Problem {
 	problem := iris.NewProblem()
 	problem.Status(iris.StatusNotFound)
 	problem.Type("about:blank")
@@ -34,7 +34,7 @@ func (nfe notFoundError) ToProblem(trans ut.Translator) iris.Problem {
 	return problem
 }
 
-func (nfe notFoundError) ToStatus(trans ut.Translator) *status.Status {
+func (nfe NotFoundError) ToStatus(trans ut.Translator) *status.Status {
 	detail, _ := trans.T("not-found-error-detail", nfe.name)
 	stt := status.New(codes.NotFound, detail)
 	return stt
