@@ -1,18 +1,44 @@
 package model
 
-import "gorm.io/gorm"
+import "github.com/VulpesFerrilata/catan/internal/domain/datamodel"
 
-type Achievement struct {
-	*gorm.Model
-	GameID      uint
-	PlayerID    uint
-	Type        AchievementType
-	BonusPoints int
+func NewLongestRoadAchievement(game *Game) *Achievement {
+	achievement := new(Achievement)
+	achievement.Type = datamodel.AT_LONGEST_ROAD
+	achievement.BonusPoints = 2
+	achievement.SetGame(game)
+	return achievement
 }
 
-type AchievementType string
+func NewLargestArmyAchievement(game *Game) *Achievement {
+	achievement := new(Achievement)
+	achievement.Type = datamodel.AT_LARGEST_ARMY
+	achievement.BonusPoints = 2
+	achievement.SetGame(game)
+	return achievement
+}
 
-const (
-	AT_LONGEST_ROAD = "LONGEST_ROAD"
-	AT_LARGEST_ARMY = "LARGEST_ARMY"
-)
+type Achievement struct {
+	*datamodel.Achievement
+	game   *Game
+	player *Player
+}
+
+func (a *Achievement) SetGame(game *Game) {
+	a.GameID = game.ID
+	a.game = game
+	a.game.achievements.append(a)
+}
+
+func (a *Achievement) SetPlayer(player *Player) {
+	if a.player != nil {
+		a.PlayerID = nil
+		a.player.achievements.remove(a)
+	}
+
+	a.player = player
+	if player != nil {
+		a.PlayerID = &player.ID
+		player.achievements.append(a)
+	}
+}

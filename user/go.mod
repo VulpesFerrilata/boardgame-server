@@ -1,10 +1,10 @@
-module github.com/VulpesFerrilata/boardgame-server/user
+module github.com/VulpesFerrilata/user
 
 go 1.14
 
 require (
-	github.com/VulpesFerrilata/boardgame-server/grpc v0.0.0-20200916095637-c7b750ace889
-	github.com/VulpesFerrilata/boardgame-server/library v0.0.0-20201001075342-28d87cbf3f13
+	github.com/VulpesFerrilata/grpc v0.0.0-20201014112828-8de03555df85
+	github.com/VulpesFerrilata/library v0.0.0-20201014112227-12140adb2439
 	github.com/kataras/iris/v12 v12.1.8
 	github.com/micro/go-micro/v2 v2.9.1
 	go.uber.org/dig v1.10.0

@@ -3,7 +3,7 @@ package main
 import (
 	"log"
 
-	"github.com/VulpesFerrilata/boardgame-server/auth/infrastructure/container"
+	"github.com/VulpesFerrilata/auth/infrastructure/container"
 	"github.com/kataras/iris/v12"
 	"github.com/micro/go-micro/v2/web"
 )

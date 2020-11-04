@@ -1,14 +1,14 @@
-module github.com/VulpesFerrilata/boardgame-server/auth
+module github.com/VulpesFerrilata/auth
 
-go 1.13
+go 1.14
 
 // This can be removed once etcd becomes go gettable, version 3.4 and 3.5 is not,
 // see https://github.com/etcd-io/etcd/issues/11154 and https://github.com/etcd-io/etcd/issues/11931.
 replace google.golang.org/grpc => google.golang.org/grpc v1.26.0
 
 require (
-	github.com/VulpesFerrilata/boardgame-server/grpc v0.0.0-20200916095637-c7b750ace889
-	github.com/VulpesFerrilata/boardgame-server/library v0.0.0-20201001075342-28d87cbf3f13
+	github.com/VulpesFerrilata/grpc v0.0.0-20201009105653-a1910f7008a0
+	github.com/VulpesFerrilata/library v0.0.0-20201009105314-dcf023fb054d
 	github.com/andybalholm/brotli v1.0.1-0.20200619015827-c3da72aa01ed // indirect
 	github.com/dgrijalva/jwt-go v3.2.0+incompatible
 	github.com/google/uuid v1.1.2-0.20200519141726-cb32006e483f // indirect

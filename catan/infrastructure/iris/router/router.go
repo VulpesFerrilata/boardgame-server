@@ -3,9 +3,9 @@ package router
 import (
 	"database/sql"
 
-	"github.com/VulpesFerrilata/boardgame-server/catan/infrastructure/iris/controller"
+	"github.com/VulpesFerrilata/catan/infrastructure/iris/controller"
 
-	"github.com/VulpesFerrilata/boardgame-server/library/pkg/middleware"
+	"github.com/VulpesFerrilata/library/pkg/middleware"
 	"github.com/kataras/iris/v12"
 	"github.com/kataras/iris/v12/mvc"
 	"github.com/kataras/iris/v12/websocket"

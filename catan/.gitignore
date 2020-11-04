@@ -1,2 +1,3 @@
-
-catan-service
+**/go.sum
+**/__debug_bin
+**/db.sqlite

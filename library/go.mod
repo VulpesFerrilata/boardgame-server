@@ -1,4 +1,4 @@
-module github.com/VulpesFerrilata/boardgame-server/library
+module github.com/VulpesFerrilata/library
 
 go 1.14
 

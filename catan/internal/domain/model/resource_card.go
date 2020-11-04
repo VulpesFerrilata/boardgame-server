@@ -1,20 +1,36 @@
 package model
 
-import "gorm.io/gorm"
+import "github.com/VulpesFerrilata/catan/internal/domain/datamodel"
 
-type ResourceCard struct {
-	*gorm.Model
-	GameID       uint
-	PlayerID     uint
-	ResourceType ResourceType
+func NewResourceCard(game *Game, resourceType datamodel.ResourceType) *ResourceCard {
+	resourceCard := new(ResourceCard)
+	resourceCard.Type = resourceType
+	resourceCard.SetGame(game)
+	return resourceCard
 }
 
-type ResourceType string
+type ResourceCard struct {
+	*datamodel.ResourceCard
+	game   *Game
+	player *Player
+}
 
-const (
-	RT_BRICK ResourceType = "BRICK"
-	RT_GRAIN ResourceType = "GRAIN"
-	RT_SHEEP ResourceType = "SHEEP"
-	RT_STONE ResourceType = "STONE"
-	RT_WOOD  ResourceType = "WOOD"
-)
+func (rc *ResourceCard) SetGame(game *Game) {
+	rc.GameID = game.ID
+	rc.game = game
+
+	rc.game.resourceCards.append(rc)
+}
+
+func (rc *ResourceCard) SetPlayer(player *Player) {
+	if rc.player != nil {
+		rc.PlayerID = nil
+		rc.player.resourceCards.remove(rc)
+	}
+
+	rc.player = player
+	if player != nil {
+		rc.PlayerID = &player.ID
+		player.resourceCards.append(rc)
+	}
+}

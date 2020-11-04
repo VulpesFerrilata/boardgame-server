@@ -2,21 +2,19 @@ package service
 
 import (
 	"context"
-	"errors"
 
-	"github.com/VulpesFerrilata/boardgame-server/user/internal/domain/model"
-	"github.com/VulpesFerrilata/boardgame-server/user/internal/domain/repository"
+	"github.com/VulpesFerrilata/user/internal/domain/datamodel"
+	"github.com/VulpesFerrilata/user/internal/domain/repository"
 	"golang.org/x/crypto/bcrypt"
-	"gorm.io/gorm"
 
-	server_errors "github.com/VulpesFerrilata/boardgame-server/library/pkg/errors"
-	"github.com/VulpesFerrilata/boardgame-server/library/pkg/middleware"
+	server_errors "github.com/VulpesFerrilata/library/pkg/errors"
+	"github.com/VulpesFerrilata/library/pkg/middleware"
 )
 
 type UserService interface {
-	GetUserRepository() repository.ReadOnlyUserRepository
-	ValidateLogin(ctx context.Context, user *model.User, plainPassword string) error
-	Create(ctx context.Context, user *model.User) error
+	GetUserRepository() repository.SafeUserRepository
+	ValidateCredential(ctx context.Context, username string, plainPassword string) error
+	Create(ctx context.Context, user *datamodel.User, plainPassword string) error
 }
 
 func NewUserService(userRepository repository.UserRepository,
@@ -32,21 +30,20 @@ type userService struct {
 	translatorMiddleware *middleware.TranslatorMiddleware
 }
 
-func (us userService) GetUserRepository() repository.ReadOnlyUserRepository {
+func (us userService) GetUserRepository() repository.SafeUserRepository {
 	return us.userRepository
 }
 
-func (us userService) ValidateLogin(ctx context.Context, user *model.User, plainPassword string) error {
+func (us userService) ValidateCredential(ctx context.Context, username string, plainPassword string) error {
 	trans := us.translatorMiddleware.Get(ctx)
 	validationErrs := server_errors.NewValidationError()
-	userDB, err := us.userRepository.GetByUsername(ctx, user.Username)
+
+	user, err := us.userRepository.GetByUsername(ctx, username)
 	if err != nil {
-		if errors.Is(err, gorm.ErrRecordNotFound) {
-			return server_errors.NewNotFoundError("user")
-		}
 		return err
 	}
-	if err := bcrypt.CompareHashAndPassword(userDB.HashPassword, []byte(plainPassword)); err != nil {
+
+	if err := bcrypt.CompareHashAndPassword(user.HashPassword, []byte(plainPassword)); err != nil {
 		fieldErr, _ := trans.T("validation-invalid", "password")
 		validationErrs.WithFieldError(fieldErr)
 	}
@@ -58,7 +55,7 @@ func (us userService) ValidateLogin(ctx context.Context, user *model.User, plain
 	return nil
 }
 
-func (us userService) validate(ctx context.Context, user *model.User) error {
+func (us userService) validate(ctx context.Context, user *datamodel.User) error {
 	trans := us.translatorMiddleware.Get(ctx)
 	validationErrs := server_errors.NewValidationError()
 
@@ -77,7 +74,13 @@ func (us userService) validate(ctx context.Context, user *model.User) error {
 	return nil
 }
 
-func (us userService) Create(ctx context.Context, user *model.User) error {
+func (us userService) Create(ctx context.Context, user *datamodel.User, plainPassword string) error {
+	hashPassword, err := bcrypt.GenerateFromPassword([]byte(plainPassword), bcrypt.DefaultCost)
+	if err != nil {
+		return err
+	}
+	user.HashPassword = hashPassword
+
 	if err := us.validate(ctx, user); err != nil {
 		return err
 	}

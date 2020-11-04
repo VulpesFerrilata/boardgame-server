@@ -10,7 +10,7 @@ import (
 )
 
 func NewNotFoundError(name string) Error {
-	return &notFoundError{
+	return &NotFoundError{
 		name: name,
 	}
 }

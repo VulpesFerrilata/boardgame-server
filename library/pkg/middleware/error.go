@@ -3,7 +3,7 @@ package middleware
 import (
 	"context"
 
-	"github.com/VulpesFerrilata/boardgame-server/library/pkg/errors"
+	"github.com/VulpesFerrilata/library/pkg/errors"
 	"github.com/kataras/iris/v12"
 	"github.com/micro/go-micro/v2/server"
 	"google.golang.org/grpc/status"

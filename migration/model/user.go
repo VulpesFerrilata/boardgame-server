@@ -3,8 +3,8 @@ package model
 import "gorm.io/gorm"
 
 type User struct {
-	gorm.Model
+	*gorm.Model
 	Username     string `gorm:"type:varchar(20);uniqueIndex"`
 	HashPassword []byte
-	Token        Token `gorm:"foreignKey:UserID"`
+	Claim        Claim `gorm:"foreignKey:UserID"`
 }

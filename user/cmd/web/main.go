@@ -3,7 +3,7 @@ package main
 import (
 	log "github.com/micro/go-micro/v2/logger"
 
-	"github.com/VulpesFerrilata/boardgame-server/user/infrastructure/container"
+	"github.com/VulpesFerrilata/user/infrastructure/container"
 	"github.com/kataras/iris/v12"
 	"github.com/micro/go-micro/v2/web"
 )

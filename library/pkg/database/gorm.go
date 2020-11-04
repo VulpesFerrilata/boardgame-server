@@ -3,7 +3,7 @@ package database
 import (
 	"strings"
 
-	"github.com/VulpesFerrilata/boardgame-server/library/config"
+	"github.com/VulpesFerrilata/library/config"
 	"gorm.io/driver/mysql"
 	"gorm.io/driver/sqlite"
 	"gorm.io/gorm"

@@ -7,9 +7,9 @@ import (
 	"github.com/micro/go-micro/v2/server"
 	"github.com/micro/go-micro/v2/server/grpc"
 
-	"github.com/VulpesFerrilata/boardgame-server/grpc/protoc/user"
-	"github.com/VulpesFerrilata/boardgame-server/library/pkg/middleware"
-	"github.com/VulpesFerrilata/boardgame-server/user/infrastructure/container"
+	"github.com/VulpesFerrilata/grpc/protoc/user"
+	"github.com/VulpesFerrilata/library/pkg/middleware"
+	"github.com/VulpesFerrilata/user/infrastructure/container"
 	"github.com/micro/go-micro/v2"
 )
 

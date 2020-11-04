@@ -1,19 +1,12 @@
 package model
 
-import "gorm.io/gorm"
-
 type Robber struct {
-	*gorm.Model
-	GameID uint
-	Q      int
-	R      int
-	Status RobberStatus
+	*Robber
+	game *Game
 }
 
-type RobberStatus string
-
-const (
-	RS_IDLE    = "IDLE"
-	RS_MOVING  = "MOVING"
-	RS_ROBBING = "ROBBING"
-)
+func (r *Robber) SetGame(game *Game) {
+	r.game.ID = game.ID
+	r.game = game
+	r.game.robber = r
+}

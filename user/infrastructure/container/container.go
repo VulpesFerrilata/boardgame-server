@@ -1,20 +1,19 @@
 package container
 
 import (
-	"github.com/VulpesFerrilata/boardgame-server/library/config"
-	"github.com/VulpesFerrilata/boardgame-server/library/pkg/database"
-	"github.com/VulpesFerrilata/boardgame-server/library/pkg/db"
-	"github.com/VulpesFerrilata/boardgame-server/library/pkg/middleware"
-	"github.com/VulpesFerrilata/boardgame-server/library/pkg/translator"
-	"github.com/VulpesFerrilata/boardgame-server/library/pkg/validator"
-	"github.com/VulpesFerrilata/boardgame-server/user/infrastructure/go-micro/handler"
-	"github.com/VulpesFerrilata/boardgame-server/user/infrastructure/iris/controller"
-	"github.com/VulpesFerrilata/boardgame-server/user/infrastructure/iris/router"
-	"github.com/VulpesFerrilata/boardgame-server/user/infrastructure/iris/server"
-	"github.com/VulpesFerrilata/boardgame-server/user/internal/domain/repository"
-	"github.com/VulpesFerrilata/boardgame-server/user/internal/domain/service"
-	"github.com/VulpesFerrilata/boardgame-server/user/internal/usecase/adapter"
-	"github.com/VulpesFerrilata/boardgame-server/user/internal/usecase/interactor"
+	"github.com/VulpesFerrilata/library/config"
+	"github.com/VulpesFerrilata/library/pkg/database"
+	"github.com/VulpesFerrilata/library/pkg/db"
+	"github.com/VulpesFerrilata/library/pkg/middleware"
+	"github.com/VulpesFerrilata/library/pkg/translator"
+	"github.com/VulpesFerrilata/library/pkg/validator"
+	"github.com/VulpesFerrilata/user/infrastructure/go-micro/handler"
+	"github.com/VulpesFerrilata/user/infrastructure/iris/controller"
+	"github.com/VulpesFerrilata/user/infrastructure/iris/router"
+	"github.com/VulpesFerrilata/user/infrastructure/iris/server"
+	"github.com/VulpesFerrilata/user/internal/domain/repository"
+	"github.com/VulpesFerrilata/user/internal/domain/service"
+	"github.com/VulpesFerrilata/user/internal/usecase/interactor"
 	"go.uber.org/dig"
 )
 
@@ -29,7 +28,6 @@ func NewContainer() *dig.Container {
 	container.Provide(repository.NewUserRepository)
 	container.Provide(service.NewUserService)
 	//--Usecase
-	container.Provide(adapter.NewUserAdapter)
 	container.Provide(interactor.NewUserInteractor)
 
 	//--Utility

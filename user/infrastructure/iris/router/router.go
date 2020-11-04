@@ -3,8 +3,8 @@ package router
 import (
 	"database/sql"
 
-	"github.com/VulpesFerrilata/boardgame-server/library/pkg/middleware"
-	"github.com/VulpesFerrilata/boardgame-server/user/infrastructure/iris/controller"
+	"github.com/VulpesFerrilata/library/pkg/middleware"
+	"github.com/VulpesFerrilata/user/infrastructure/iris/controller"
 	"github.com/kataras/iris/v12"
 	"github.com/kataras/iris/v12/mvc"
 )

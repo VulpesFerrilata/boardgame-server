@@ -2,78 +2,161 @@ package interactor
 
 import (
 	"context"
+	"errors"
 
-	"github.com/VulpesFerrilata/boardgame-server/catan/internal/domain/service"
-	"github.com/VulpesFerrilata/boardgame-server/catan/internal/usecase/adapter"
-	"github.com/VulpesFerrilata/boardgame-server/catan/internal/usecase/form"
-	"github.com/VulpesFerrilata/boardgame-server/library/pkg/errors"
+	"github.com/VulpesFerrilata/catan/internal/domain/datamodel"
+	"github.com/VulpesFerrilata/catan/internal/domain/model"
+	"github.com/VulpesFerrilata/catan/internal/domain/service"
+	"github.com/VulpesFerrilata/catan/internal/usecase/request"
+	"github.com/VulpesFerrilata/catan/internal/usecase/response"
+	"github.com/VulpesFerrilata/grpc/protoc/user"
+	"github.com/VulpesFerrilata/library/pkg/validator"
 )
 
 type CatanInteractor interface {
-	NewGame(ctx context.Context, userForm *form.UserForm) error
-	JoinGame(ctx context.Context, userForm form.UserForm) error
-	StartGame(ctx context.Context, userForm form.UserForm) error
-	LeaveGame(ctx context.Context, userForm form.UserForm) error
 }
 
-func NewCatanInteractor(catanAdapter adapter.CatanAdapter,
-	gameService service.GameService,
-	playerService service.PlayerService) CatanInteractor {
+func NewCatanInteractor(validate validator.Validate,
+	roomService service.RoomService,
+	gameAggregateService service.GameAggregateService,
+	userService user.UserService) CatanInteractor {
 	return &catanInteractor{
-		catanAdapter:  catanAdapter,
-		gameService:   gameService,
-		playerService: playerService,
+		validate:             validate,
+		roomService:          roomService,
+		gameAggregateService: gameAggregateService,
+		userService:          userService,
 	}
 }
 
 type catanInteractor struct {
-	catanAdapter  adapter.CatanAdapter
-	gameService   service.GameService
-	playerService service.PlayerService
+	validate             validator.Validate
+	roomService          service.RoomService
+	gameAggregateService service.GameAggregateService
+	userService          user.UserService
 }
 
-func (ci catanInteractor) NewGame(ctx context.Context, userForm *form.UserForm) error {
-	player, err := ci.catanAdapter.ParseUser(ctx, userForm)
+func (ci catanInteractor) FindRooms(ctx context.Context, roomRequest *request.RoomRequest) (response.RoomsResponse, error) {
+	if err := ci.validate.Struct(ctx, roomRequest); err != nil {
+		return nil, err
+	}
+
+	if roomRequest.ID != 0 {
+		room, err := ci.roomService.GetRoomById(ctx, uint(roomRequest.ID))
+		if err != nil {
+			return nil, err
+		}
+
+		return response.NewRoomsResponse(room), nil
+	}
+
+	rooms, err := ci.roomService.FindRoomsByStatus(ctx, roomRequest.Status)
 	if err != nil {
-		return err
+		return nil, err
 	}
-
-	game, err := ci.gameService.New(ctx)
-	if err != nil {
-		return err
-	}
-	player.GameID = game.ID
-
-	if err := ci.playerService.Create(ctx, player); err != nil {
-		return err
-	}
-
-	return nil
+	return response.NewRoomsResponse(rooms...), nil
 }
 
-func (ci catanInteractor) JoinGame(ctx context.Context, userForm *form.UserForm, gameForm *form.GameForm) error {
-	player, err := ci.catanAdapter.ParseUser(ctx, userForm)
+func (ci catanInteractor) CreateGame(ctx context.Context) (*response.GameResponse, error) {
+	userId := 0
+
+	userRequestPb := new(user.UserRequest)
+	userRequestPb.ID = int64(userId)
+	userPb, err := ci.userService.GetUserById(ctx, userRequestPb)
 	if err != nil {
-		return err
+		return nil, err
+	}
+	game := model.NewGame()
+	player := model.NewPlayer(game)
+	model.NewUser(player, userPb)
+
+	if err := ci.gameAggregateService.Save(ctx, game); err != nil {
+		return nil, err
 	}
 
-	game, err := ci.catanAdapter.ParseGame(ctx, gameForm)
+	return response.NewGameResponse(game), nil
+}
+
+func (ci catanInteractor) JoinGame(ctx context.Context, gameRequest *request.GameRequest) (*response.GameResponse, error) {
+	game, err := ci.gameAggregateService.GetById(ctx, uint(gameRequest.ID))
 	if err != nil {
-		return err
+		return nil, err
 	}
-	player.GameID = game.ID
 
-	isExists, err := ci.gameService.IsExists(ctx, game)
+	players := game.GetPlayers()
+	if game.Status == datamodel.GS_WAITING && len(players) < 4 {
+		userId := 0 //todo: userid from context
+		userRequestPb := new(user.UserRequest)
+		userRequestPb.ID = int64(userId)
+		userPb, err := ci.userService.GetUserById(ctx, userRequestPb)
+		if err != nil {
+			return nil, err
+		}
+		player := model.NewPlayer(game)
+		model.NewUser(player, userPb)
+
+		if err := ci.gameAggregateService.Save(ctx, game); err != nil {
+			return nil, err
+		}
+	}
+
+	return response.NewGameResponse(game), nil
+}
+
+func (ci catanInteractor) StartGame(ctx context.Context, gameRequest *request.GameRequest) (*response.GameResponse, error) {
+	game, err := ci.gameAggregateService.GetById(ctx, uint(gameRequest.ID))
 	if err != nil {
-		return err
-	}
-	if !isExists {
-		return errors.NewNotFoundError("game")
+		return nil, err
 	}
 
-	if err := ci.playerService.Create(ctx, player); err != nil {
-		return err
+	switch game.Status {
+	case datamodel.GS_STARTED:
+		return nil, errors.New("game has already started")
+	case datamodel.GS_FINISHED:
+		return nil, errors.New("game was finished")
 	}
 
-	return nil
+	userId := uint(0) //todo: userid from context
+	player := game.GetPlayers().Filter(func(player *model.Player) bool {
+		return player.UserID == userId
+	}).First()
+	if player == nil {
+		return nil, errors.New("player is not exists")
+	}
+	if !player.IsHost() {
+		return nil, errors.New("only host player can start game")
+	}
+
+	game.Init()
+
+	if err := ci.gameAggregateService.Save(ctx, game); err != nil {
+		return nil, err
+	}
+
+	return response.NewGameResponse(game), nil
+}
+
+func (ci catanInteractor) LeaveGame(ctx context.Context, gameRequest *request.GameRequest) (*response.GameResponse, error) {
+	game, err := ci.gameAggregateService.GetById(ctx, uint(gameRequest.ID))
+	if err != nil {
+		return nil, err
+	}
+
+	userId := uint(0) //todo: userid from context
+	player := game.GetPlayers().Filter(func(player *model.Player) bool {
+		return player.UserID == userId
+	}).First()
+	if player != nil {
+		switch game.Status {
+		case datamodel.GS_WAITING:
+			player.Remove()
+		case datamodel.GS_STARTED:
+			player.IsLeft = true
+		}
+
+		if err := ci.gameAggregateService.Save(ctx, game); err != nil {
+			return nil, err
+		}
+	}
+
+	return response.NewGameResponse(game), nil
 }

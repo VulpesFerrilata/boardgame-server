@@ -1,7 +1,7 @@
 package server
 
 import (
-	"github.com/VulpesFerrilata/boardgame-server/auth/infrastructure/iris/router"
+	"github.com/VulpesFerrilata/auth/infrastructure/iris/router"
 	"github.com/kataras/iris/v12"
 )
 

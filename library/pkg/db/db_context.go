@@ -3,7 +3,7 @@ package db
 import (
 	"context"
 
-	"github.com/VulpesFerrilata/boardgame-server/library/pkg/middleware"
+	"github.com/VulpesFerrilata/library/pkg/middleware"
 	"gorm.io/gorm"
 )
 

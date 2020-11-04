@@ -3,9 +3,9 @@ package main
 import (
 	"log"
 
-	"github.com/VulpesFerrilata/boardgame-server/library/config"
-	"github.com/VulpesFerrilata/boardgame-server/library/pkg/database"
-	"github.com/VulpesFerrilata/boardgame-server/migration/model"
+	"github.com/VulpesFerrilata/library/config"
+	"github.com/VulpesFerrilata/library/pkg/database"
+	"github.com/VulpesFerrilata/migration/model"
 )
 
 func main() {
@@ -21,7 +21,7 @@ func main() {
 
 	if err := db.AutoMigrate(
 		&model.User{},
-		&model.Token{},
+		&model.Claim{},
 	); err != nil {
 		log.Fatal(err)
 	}

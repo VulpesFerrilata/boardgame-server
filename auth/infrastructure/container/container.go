@@ -1,21 +1,20 @@
 package container
 
 import (
-	"github.com/VulpesFerrilata/boardgame-server/auth/infrastructure/go-micro/handler"
-	"github.com/VulpesFerrilata/boardgame-server/auth/infrastructure/iris/controller"
-	"github.com/VulpesFerrilata/boardgame-server/auth/infrastructure/iris/router"
-	"github.com/VulpesFerrilata/boardgame-server/auth/infrastructure/iris/server"
-	"github.com/VulpesFerrilata/boardgame-server/auth/internal/domain/repository"
-	"github.com/VulpesFerrilata/boardgame-server/auth/internal/domain/service"
-	"github.com/VulpesFerrilata/boardgame-server/auth/internal/usecase/adapter"
-	"github.com/VulpesFerrilata/boardgame-server/auth/internal/usecase/interactor"
-	gateway "github.com/VulpesFerrilata/boardgame-server/grpc/service"
-	"github.com/VulpesFerrilata/boardgame-server/library/config"
-	"github.com/VulpesFerrilata/boardgame-server/library/pkg/database"
-	"github.com/VulpesFerrilata/boardgame-server/library/pkg/db"
-	"github.com/VulpesFerrilata/boardgame-server/library/pkg/middleware"
-	"github.com/VulpesFerrilata/boardgame-server/library/pkg/translator"
-	"github.com/VulpesFerrilata/boardgame-server/library/pkg/validator"
+	"github.com/VulpesFerrilata/auth/infrastructure/go-micro/handler"
+	"github.com/VulpesFerrilata/auth/infrastructure/iris/controller"
+	"github.com/VulpesFerrilata/auth/infrastructure/iris/router"
+	"github.com/VulpesFerrilata/auth/infrastructure/iris/server"
+	"github.com/VulpesFerrilata/auth/internal/domain/repository"
+	"github.com/VulpesFerrilata/auth/internal/domain/service"
+	"github.com/VulpesFerrilata/auth/internal/usecase/interactor"
+	gateway "github.com/VulpesFerrilata/grpc/service"
+	"github.com/VulpesFerrilata/library/config"
+	"github.com/VulpesFerrilata/library/pkg/database"
+	"github.com/VulpesFerrilata/library/pkg/db"
+	"github.com/VulpesFerrilata/library/pkg/middleware"
+	"github.com/VulpesFerrilata/library/pkg/translator"
+	"github.com/VulpesFerrilata/library/pkg/validator"
 
 	"go.uber.org/dig"
 )
@@ -28,10 +27,10 @@ func NewContainer() *dig.Container {
 	container.Provide(config.NewJwtConfig)
 
 	//--Domain
-	container.Provide(repository.NewAuthRepository)
-	container.Provide(service.NewAuthService)
+	container.Provide(repository.NewClaimRepository)
+	container.Provide(service.NewClaimService)
+	container.Provide(service.NewTokenService)
 	//--Usecase
-	container.Provide(adapter.NewAuthAdapter)
 	container.Provide(interactor.NewAuthInteractor)
 	//--Gateways
 	container.Provide(gateway.NewUserService)

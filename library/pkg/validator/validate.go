@@ -6,9 +6,9 @@ import (
 	"reflect"
 	"strings"
 
-	"github.com/VulpesFerrilata/boardgame-server/library/pkg/errors"
+	"github.com/VulpesFerrilata/library/pkg/errors"
 
-	"github.com/VulpesFerrilata/boardgame-server/library/pkg/middleware"
+	"github.com/VulpesFerrilata/library/pkg/middleware"
 	"github.com/go-playground/locales/en"
 	ut "github.com/go-playground/universal-translator"
 	"gopkg.in/go-playground/validator.v9"
@@ -25,7 +25,7 @@ type Validate interface {
 func NewValidate(utrans *ut.UniversalTranslator, translatorMiddleware *middleware.TranslatorMiddleware) (Validate, error) {
 	v := validator.New()
 	v.RegisterTagNameFunc(func(field reflect.StructField) string {
-		name := strings.SplitN(field.Tag.Get("name"), ",", 2)[0]
+		name := strings.SplitN(field.Tag.Get("json"), ",", 2)[0]
 		if name == "-" {
 			return ""
 		}
